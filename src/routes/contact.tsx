@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, Phone, MapPin, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 
@@ -41,7 +42,13 @@ function ContactPage() {
               </div>
             ) : (
               <form
-                onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSent(true);
+                  toast.success("Message received", {
+                    description: "A VisaHOBe specialist will reach out within one business day.",
+                  });
+                }}
                 className="grid gap-5 sm:grid-cols-2"
               >
                 <Field label="Full name" name="name" required />
