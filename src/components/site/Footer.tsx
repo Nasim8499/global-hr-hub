@@ -4,15 +4,13 @@ import { countries } from "@/data/countries";
 export function Footer() {
   return (
     <footer className="border-t border-border bg-secondary/40">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[image:var(--gradient-hero)] font-bold text-primary-foreground">
-                V
-              </div>
-              <span className="text-lg font-semibold text-foreground">VisaHOBe</span>
-            </div>
+            <span className="text-2xl font-bold tracking-tight">
+              <span className="text-foreground">Visa</span>
+              <span className="gradient-text">HOBe</span>
+            </span>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
               Global HR, payroll and compliance for distributed teams — backed by expert
               local support.
@@ -35,11 +33,7 @@ export function Footer() {
             <ul className="mt-4 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
               {countries.map((c) => (
                 <li key={c.slug}>
-                  <Link
-                    to="/countries/$slug"
-                    params={{ slug: c.slug }}
-                    className="hover:text-foreground"
-                  >
+                  <Link to="/countries/$slug" params={{ slug: c.slug }} className="hover:text-foreground">
                     {c.name}
                   </Link>
                 </li>
