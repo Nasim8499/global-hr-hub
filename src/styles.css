@@ -51,9 +51,10 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 280);
   /* Playroll-like deep purple primary */
-  --primary: oklch(0.48 0.24 285);
+  /* Playroll vibrant violet ~ #5B2BFF */
+  --primary: oklch(0.45 0.27 285);
   --primary-foreground: oklch(0.99 0.005 300);
-  --primary-glow: oklch(0.7 0.2 320);
+  --primary-glow: oklch(0.68 0.22 310);
 
   --secondary: oklch(0.97 0.012 285);
   --secondary-foreground: oklch(0.25 0.06 285);
@@ -65,20 +66,21 @@
   --destructive-foreground: oklch(0.99 0.005 0);
   --border: oklch(0.93 0.008 285);
   --input: oklch(0.93 0.008 285);
-  --ring: oklch(0.55 0.22 290);
+  --ring: oklch(0.55 0.27 285);
 
-  /* Playroll signature peach -> pink -> purple gradient */
-  --gradient-hero: linear-gradient(135deg,
-    oklch(0.86 0.10 60) 0%,
-    oklch(0.78 0.16 25) 28%,
-    oklch(0.65 0.22 350) 60%,
-    oklch(0.50 0.24 290) 100%);
+  /* Playroll signature peach -> coral -> pink -> deep violet */
+  --gradient-hero: linear-gradient(125deg,
+    #FFE4C9 0%,
+    #FFB89A 20%,
+    #FF8FA9 42%,
+    #C969D9 65%,
+    #6E3AFF 100%);
   --gradient-soft: linear-gradient(180deg, oklch(0.985 0.01 300), oklch(1 0 0));
-  --gradient-purple: linear-gradient(135deg, oklch(0.50 0.24 285), oklch(0.62 0.22 300));
+  --gradient-purple: linear-gradient(135deg, #5B2BFF 0%, #8A4BFF 100%);
 
-  --shadow-elegant: 0 24px 60px -24px oklch(0.45 0.22 290 / 0.35);
-  --shadow-card: 0 8px 28px -12px oklch(0.45 0.22 290 / 0.18);
-  --shadow-soft: 0 2px 12px -4px oklch(0.4 0.05 285 / 0.10);
+  --shadow-elegant: 0 24px 60px -24px rgba(91, 43, 255, 0.35);
+  --shadow-card: 0 8px 28px -12px rgba(91, 43, 255, 0.18);
+  --shadow-soft: 0 2px 12px -4px rgba(60, 30, 120, 0.10);
 
   --sidebar: oklch(0.985 0.005 285);
   --sidebar-foreground: oklch(0.18 0.02 280);
