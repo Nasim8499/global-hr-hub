@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Banknote, Calendar, Clock, Globe2, Briefcase, Plane, ShieldCheck } from "lucide-react";
+import { ArrowRight, Banknote, Calendar, Clock, Globe2, Briefcase, Plane, ShieldCheck, FileText, CheckCircle2, DollarSign } from "lucide-react";
+import { useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries, getCountry, type Country } from "@/data/countries";
+import { visaTypes } from "@/data/visaTypes";
 
 export const Route = createFileRoute("/countries/$slug")({
   loader: ({ params }) => {
@@ -83,6 +85,8 @@ function CountryPage() {
           <Quick icon={Calendar} label="Payroll cycle" value={country.payrollCycle} />
         </div>
       </section>
+
+      <HiringEssentials country={country} />
 
       <Block title="Employment essentials" icon={Briefcase}>
         <Grid items={[
@@ -178,3 +182,173 @@ function Grid({ items }: { items: [string, string][] }) {
 }
 
 export type { Country };
+
+function HiringEssentials({ country }: { country: Country }) {
+  const tabs = [
+    { key: "overview", label: "Overview" },
+    { key: "payroll", label: "Payroll & Currency" },
+    { key: "compliance", label: "Compliance Highlights" },
+    { key: "posting", label: "Job Posting Requirements" },
+    { key: "visas", label: "Available Visa Types" },
+  ] as const;
+  type TabKey = typeof tabs[number]["key"];
+  const [active, setActive] = useState<TabKey>("overview");
+
+  return (
+    <section id="hiring-essentials" className="bg-secondary/40">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground">
+            <FileText className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Hiring essentials in {country.name}</h2>
+            <p className="text-sm text-muted-foreground">Everything you need — payroll, compliance, postings and visas.</p>
+          </div>
+        </div>
+
+        <div role="tablist" aria-label="Hiring essentials sections" className="mt-6 flex flex-wrap gap-2 border-b border-border">
+          {tabs.map((t) => {
+            const isActive = active === t.key;
+            return (
+              <button
+                key={t.key}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`he-panel-${t.key}`}
+                id={`he-tab-${t.key}`}
+                type="button"
+                onClick={() => setActive(t.key)}
+                className={`rounded-t-lg px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] ${
+                  isActive
+                    ? "border-b-2 border-[oklch(0.55_0.22_290)] text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-8">
+          {active === "overview" && (
+            <div role="tabpanel" id="he-panel-overview" aria-labelledby="he-tab-overview" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <EssentialCard icon={DollarSign} label="Currency" value={country.currency} />
+              <EssentialCard icon={Calendar} label="Payroll cycle" value={country.payrollCycle} />
+              <EssentialCard icon={Clock} label="Working hours" value={country.workingHours} />
+              <EssentialCard icon={Globe2} label="Official language" value={country.language} />
+            </div>
+          )}
+
+          {active === "payroll" && (
+            <div role="tabpanel" id="he-panel-payroll" aria-labelledby="he-tab-payroll" className="grid gap-4 sm:grid-cols-2">
+              <EssentialCard icon={DollarSign} label="Currency" value={country.currency} />
+              <EssentialCard icon={Calendar} label="Payroll cycle" value={country.payrollCycle} />
+              <div className="sm:col-span-2 rounded-2xl border border-border bg-card p-6">
+                <h3 className="text-base font-semibold text-foreground">Tax & contributions</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{country.tax}</p>
+              </div>
+            </div>
+          )}
+
+          {active === "compliance" && (
+            <div role="tabpanel" id="he-panel-compliance" aria-labelledby="he-tab-compliance" className="grid gap-4 sm:grid-cols-2">
+              {[
+                ["Contracts", country.employment.contracts],
+                ["Probation", country.employment.probation],
+                ["Notice period", country.employment.notice],
+                ["Termination", country.employment.termination],
+              ].map(([k, v]) => (
+                <div key={k} className="rounded-2xl border border-border bg-card p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{k}</p>
+                  <p className="mt-2 text-sm text-foreground">{v}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {active === "posting" && (
+            <div role="tabpanel" id="he-panel-posting" aria-labelledby="he-tab-posting" className="rounded-2xl border border-border bg-card p-6">
+              <h3 className="text-base font-semibold text-foreground">Job posting requirements</h3>
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {[
+                  `Job titles and descriptions in ${country.language}`,
+                  "Salary range disclosure where required by law",
+                  "Equal opportunity / non-discrimination statement",
+                  "Employer legal name and registered address",
+                  `Working hours: ${country.workingHours}`,
+                  `Currency for compensation: ${country.currency}`,
+                ].map((line) => (
+                  <li key={line} className="flex gap-3 text-sm text-muted-foreground">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[oklch(0.55_0.22_290)]" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {active === "visas" && (
+            <div role="tabpanel" id="he-panel-visas" aria-labelledby="he-tab-visas">
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-foreground">Available Visa Types</h3>
+                <p className="mt-1 text-sm text-muted-foreground">We process {visaTypes.length} visa categories for {country.name}.</p>
+              </div>
+              <div className="grid gap-5 md:grid-cols-2">
+                {visaTypes.map((v) => (
+                  <article key={v.name} className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] hover-lift">
+                    <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl" style={{ backgroundImage: "var(--gradient-purple)" }} />
+                    <div className="relative flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="text-lg font-semibold text-foreground">{v.name}</h4>
+                        <p className="mt-1 text-xs font-medium text-muted-foreground">{v.feeRange} · {v.duration}</p>
+                      </div>
+                      <Link to="/contact" className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[image:var(--gradient-purple)] px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-soft)] hover:opacity-95">
+                        Apply Now <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </div>
+                    <p className="relative mt-3 text-sm text-muted-foreground">{v.description}</p>
+                    <div className="relative mt-5">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Requirements</p>
+                      <ul className="mt-2 space-y-1.5">
+                        {v.requirements.map((r) => (
+                          <li key={r} className="flex gap-2 text-sm text-foreground">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[oklch(0.55_0.22_290)]" />
+                            <span>{r}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="relative mt-5 rounded-xl border border-dashed border-border bg-secondary/40 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Required Documents</p>
+                      <ul className="mt-2 flex flex-wrap gap-1.5">
+                        {v.documents.map((d) => (
+                          <li key={d} className="rounded-full bg-card px-2.5 py-1 text-[11px] font-medium text-foreground border border-border">{d}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EssentialCard({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
+      <div className="flex items-center gap-3 text-muted-foreground">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground">
+          <Icon className="h-4 w-4" />
+        </div>
+        <span className="text-xs uppercase tracking-wider">{label}</span>
+      </div>
+      <p className="mt-3 text-base font-semibold text-foreground">{value}</p>
+    </div>
+  );
+}

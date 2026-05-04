@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, Globe2, ShieldCheck, Wallet, Users, Briefcase,
   Plane, CheckCircle2, Sparkles, Building2, BarChart3, HeartHandshake,
-  Search, ArrowLeftRight,
+  Search, ArrowLeftRight, Download,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 
@@ -101,6 +101,7 @@ function Index() {
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState<string>("All");
   const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+  const marqueeListRef = useRef<HTMLUListElement>(null);
 
   const regions = useMemo(
     () => ["All", ...Array.from(new Set(countries.map((c) => c.region)))],
@@ -114,6 +115,43 @@ function Index() {
       return matchesQ && matchesR;
     });
   }, [query, region]);
+
+  const exportCsv = () => {
+    const headers = ["Name", "Region", "Capital", "Currency", "Language", "Payroll Cycle", "Working Hours"];
+    const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const rows = filteredCountries.map((c) =>
+      [c.name, c.region, c.capital, c.currency, c.language, c.payrollCycle, c.workingHours].map(escape).join(","),
+    );
+    const csv = [headers.map(escape).join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `countries-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const onMarqueeKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
+    const list = marqueeListRef.current;
+    if (!list) return;
+    const items = Array.from(list.querySelectorAll<HTMLAnchorElement>('a[data-marquee-item="true"]'));
+    if (items.length === 0) return;
+    const current = document.activeElement as HTMLElement | null;
+    const idx = items.findIndex((el) => el === current);
+    let next = idx;
+    switch (e.key) {
+      case "ArrowRight": next = idx < 0 ? 0 : (idx + 1) % items.length; break;
+      case "ArrowLeft":  next = idx <= 0 ? items.length - 1 : idx - 1; break;
+      case "Home":       next = 0; break;
+      case "End":        next = items.length - 1; break;
+      default: return;
+    }
+    e.preventDefault();
+    items[next]?.focus();
+  };
 
   return (
     <SiteLayout>
@@ -348,6 +386,16 @@ function Index() {
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={exportCsv}
+            disabled={filteredCountries.length === 0}
+            aria-label={`Export ${filteredCountries.length} filtered countries as CSV`}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--gradient-purple)] px-4 py-2 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] focus-visible:ring-offset-2"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export results ({filteredCountries.length})
+          </button>
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
@@ -416,7 +464,11 @@ function Index() {
             role="region"
             aria-label="Countries we cover, scrolling list"
           >
-            <ul className={`${direction === "rtl" ? "animate-marquee" : "animate-marquee-reverse"} flex w-max gap-3`}>
+            <ul
+              ref={marqueeListRef}
+              onKeyDown={onMarqueeKeyDown}
+              className={`${direction === "rtl" ? "animate-marquee" : "animate-marquee-reverse"} flex w-max gap-3 focus-within:[animation-play-state:paused]`}
+            >
               {[...countries, ...countries, ...countries].map((c, i) => (
                 <li key={`${c.slug}-${i}`} className="shrink-0">
                   <Link
@@ -425,6 +477,7 @@ function Index() {
                     aria-label={`${c.name} — view hiring essentials`}
                     tabIndex={i < countries.length ? 0 : -1}
                     aria-hidden={i >= countries.length}
+                    data-marquee-item={i < countries.length ? "true" : undefined}
                     className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)] transition hover:border-[oklch(0.55_0.22_290)] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] focus-visible:ring-offset-2"
                   >
                     <span aria-hidden className="text-xl">{c.flag}</span>
