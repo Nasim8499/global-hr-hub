@@ -146,5 +146,29 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  a, button {
+    transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease, opacity 200ms ease;
+  }
+
+  img {
+    transition: transform 400ms ease, opacity 400ms ease;
+  }
+}
+
+@layer utilities {
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up { animation: fadeUp 600ms ease-out both; }
+  .hover-lift { transition: transform 250ms ease, box-shadow 250ms ease; }
+  .hover-lift:hover { transform: translateY(-4px); box-shadow: var(--shadow-elegant); }
 }
