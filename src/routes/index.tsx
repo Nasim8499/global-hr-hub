@@ -366,12 +366,18 @@ function Index() {
 
           <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {pillars.map(({ icon: Icon, t, b }) => (
-              <div key={t} className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] hover-lift">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground">
+              <div key={t} className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] hover-lift">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl transition-opacity duration-500 group-hover:opacity-40"
+                  style={{ backgroundImage: "var(--gradient-purple)" }}
+                />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[image:var(--gradient-purple)] text-primary-foreground shadow-[var(--shadow-card)]">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-5 text-base font-semibold text-foreground">{t}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{b}</p>
+                <h3 className="relative mt-5 text-base font-semibold text-foreground">{t}</h3>
+                <p className="relative mt-2 text-sm text-muted-foreground">{b}</p>
+                <div className="relative mt-4 h-1 w-10 rounded-full bg-[image:var(--gradient-purple)] transition-all duration-300 group-hover:w-16" />
               </div>
             ))}
           </div>
