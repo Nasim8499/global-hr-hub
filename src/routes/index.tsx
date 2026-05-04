@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, Globe2, ShieldCheck, Wallet, Users, Briefcase,
   Plane, CheckCircle2, Sparkles, Building2, BarChart3, HeartHandshake,
-  Search, ArrowLeftRight,
+  Search, ArrowLeftRight, Download,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 
@@ -101,6 +101,7 @@ function Index() {
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState<string>("All");
   const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+  const marqueeListRef = useRef<HTMLUListElement>(null);
 
   const regions = useMemo(
     () => ["All", ...Array.from(new Set(countries.map((c) => c.region)))],
@@ -114,6 +115,43 @@ function Index() {
       return matchesQ && matchesR;
     });
   }, [query, region]);
+
+  const exportCsv = () => {
+    const headers = ["Name", "Region", "Capital", "Currency", "Language", "Payroll Cycle", "Working Hours"];
+    const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const rows = filteredCountries.map((c) =>
+      [c.name, c.region, c.capital, c.currency, c.language, c.payrollCycle, c.workingHours].map(escape).join(","),
+    );
+    const csv = [headers.map(escape).join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `countries-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const onMarqueeKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
+    const list = marqueeListRef.current;
+    if (!list) return;
+    const items = Array.from(list.querySelectorAll<HTMLAnchorElement>('a[data-marquee-item="true"]'));
+    if (items.length === 0) return;
+    const current = document.activeElement as HTMLElement | null;
+    const idx = items.findIndex((el) => el === current);
+    let next = idx;
+    switch (e.key) {
+      case "ArrowRight": next = idx < 0 ? 0 : (idx + 1) % items.length; break;
+      case "ArrowLeft":  next = idx <= 0 ? items.length - 1 : idx - 1; break;
+      case "Home":       next = 0; break;
+      case "End":        next = items.length - 1; break;
+      default: return;
+    }
+    e.preventDefault();
+    items[next]?.focus();
+  };
 
   return (
     <SiteLayout>
