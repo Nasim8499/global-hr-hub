@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as GlobalRecruitmentRouteImport } from './routes/global-recruitment'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GlobalRecruitmentRoute = GlobalRecruitmentRouteImport.update({
   id: '/global-recruitment',
   path: '/global-recruitment',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/global-recruitment': typeof GlobalRecruitmentRoute
+  '/legal': typeof LegalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/global-recruitment': typeof GlobalRecruitmentRoute
+  '/legal': typeof LegalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/global-recruitment': typeof GlobalRecruitmentRoute
+  '/legal': typeof LegalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact' | '/global-recruitment'
+  fullPaths: '/' | '/contact' | '/global-recruitment' | '/legal'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/global-recruitment'
-  id: '__root__' | '/' | '/contact' | '/global-recruitment'
+  to: '/' | '/contact' | '/global-recruitment' | '/legal'
+  id: '__root__' | '/' | '/contact' | '/global-recruitment' | '/legal'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
   GlobalRecruitmentRoute: typeof GlobalRecruitmentRoute
+  LegalRoute: typeof LegalRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/global-recruitment': {
       id: '/global-recruitment'
       path: '/global-recruitment'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
   GlobalRecruitmentRoute: GlobalRecruitmentRoute,
+  LegalRoute: LegalRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
