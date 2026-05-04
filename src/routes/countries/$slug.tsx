@@ -47,35 +47,36 @@ function CountryPage() {
   const others = countries.filter((c) => c.slug !== country.slug).slice(0, 4);
   return (
     <SiteLayout>
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 -z-10 bg-[image:var(--gradient-hero)] opacity-[0.06]" />
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground">Home</Link>
-            <span>/</span><span>Countries</span><span>/</span>
-            <span className="text-foreground">{country.name}</span>
-          </div>
-          <div className="mt-6 flex items-center gap-5">
-            <span className="text-6xl">{country.flag}</span>
-            <div>
-              <p className="text-sm uppercase tracking-wider text-[oklch(0.55_0.18_252)]">{country.region}</p>
-              <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">Hire in {country.name}</h1>
+      <section className="px-3 pt-3 sm:px-4 sm:pt-4">
+        <div className="overflow-hidden rounded-[28px] sm:rounded-[36px] bg-[image:var(--gradient-hero)] shadow-[var(--shadow-elegant)]">
+          <div className="mx-auto max-w-7xl px-5 py-14 sm:px-10 sm:py-20 lg:px-14">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/75">
+              <Link to="/" className="hover:text-foreground">Home</Link>
+              <span>/</span><span>Countries</span><span>/</span>
+              <span className="font-medium text-foreground">{country.name}</span>
             </div>
-          </div>
-          <p className="mt-5 max-w-2xl text-lg text-muted-foreground">{country.tagline}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-[image:var(--gradient-hero)] px-5 py-3 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] hover:opacity-90">
-              Hire in {country.name} <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link to="/legal" className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-medium text-foreground hover:bg-accent">
-              Legal advisory
-            </Link>
+            <div className="mt-6 flex items-center gap-5">
+              <span className="text-6xl drop-shadow-sm">{country.flag}</span>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-foreground/75">{country.region}</p>
+                <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">Hire in {country.name}</h1>
+              </div>
+            </div>
+            <p className="mt-5 max-w-2xl text-base text-foreground/85 sm:text-lg">{country.tagline}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-[image:var(--gradient-purple)] px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] hover:opacity-95">
+                Hire in {country.name} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link to="/legal" className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-white/85 px-6 py-3 text-sm font-semibold text-foreground hover:bg-white">
+                Legal advisory
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <Quick icon={Banknote} label="Currency" value={country.currency} />
           <Quick icon={Globe2} label="Official language" value={country.language} />
           <Quick icon={Clock} label="Working hours" value={country.workingHours} />
@@ -111,10 +112,10 @@ function CountryPage() {
       </Block>
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-semibold text-foreground">Explore other markets</h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Explore other markets</h2>
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {others.map((c) => (
-            <Link key={c.slug} to="/countries/$slug" params={{ slug: c.slug }} className="group rounded-2xl border border-border bg-card p-5 hover:-translate-y-0.5 transition-all hover:shadow-[var(--shadow-card)]">
+            <Link key={c.slug} to="/countries/$slug" params={{ slug: c.slug }} className="group rounded-2xl border border-border bg-card p-5 hover-lift">
               <div className="flex items-center justify-between">
                 <span className="text-3xl">{c.flag}</span>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
@@ -126,12 +127,14 @@ function CountryPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-[image:var(--gradient-hero)] p-12 text-center shadow-[var(--shadow-elegant)]">
-          <h2 className="text-3xl font-semibold tracking-tight text-primary-foreground sm:text-4xl">Ready to hire in {country.name}?</h2>
-          <Link to="/contact" className="mt-8 inline-flex items-center gap-2 rounded-md bg-background px-6 py-3 text-sm font-semibold text-foreground hover:-translate-y-0.5 transition-transform">
-            Talk to a specialist <ArrowRight className="h-4 w-4" />
-          </Link>
+      <section className="px-3 pb-12 sm:px-4 sm:pb-16">
+        <div className="overflow-hidden rounded-[28px] sm:rounded-[36px] bg-[image:var(--gradient-hero)] shadow-[var(--shadow-elegant)]">
+          <div className="mx-auto max-w-5xl px-6 py-16 text-center sm:py-20">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">Ready to hire in {country.name}?</h2>
+            <Link to="/contact" className="mt-8 inline-flex items-center gap-2 rounded-full bg-[image:var(--gradient-purple)] px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] hover:opacity-95">
+              Talk to a specialist <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
     </SiteLayout>
@@ -140,7 +143,7 @@ function CountryPage() {
 
 function Quick({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
       <div className="flex items-center gap-3 text-muted-foreground"><Icon className="h-4 w-4" /><span className="text-xs uppercase tracking-wider">{label}</span></div>
       <p className="mt-2 text-base font-semibold text-foreground">{value}</p>
     </div>
@@ -152,8 +155,8 @@ function Block({ title, icon: Icon, children, alt }: { title: string; icon: Reac
     <section className={alt ? "bg-secondary/40" : ""}>
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground"><Icon className="h-5 w-5" /></div>
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h2>
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-5 w-5" /></div>
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{title}</h2>
         </div>
         <div className="mt-6">{children}</div>
       </div>
@@ -163,9 +166,9 @@ function Block({ title, icon: Icon, children, alt }: { title: string; icon: Reac
 
 function Grid({ items }: { items: [string, string][] }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {items.map(([k, v]) => (
-        <div key={k} className="rounded-xl border border-border bg-card p-5">
+        <div key={k} className="rounded-2xl border border-border bg-card p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{k}</p>
           <p className="mt-2 text-sm text-foreground">{v}</p>
         </div>

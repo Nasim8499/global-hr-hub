@@ -1,66 +1,75 @@
-# VisaHOBe — Global HR, Payroll & Compliance Site
+I’ll rebuild the VisaHOBe site to closely match the Playroll visual direction you shared: clean white layout, rounded pill navigation, purple/blue gradient hero blocks, large thin headings, smooth transitions, and responsive mobile/tablet layouts.
 
-A multi-page marketing website for **VisaHOBe Pte. Ltd.** following the structure and section patterns common to global EOR/payroll platforms, with original copy, a corporate blue palette, and a text wordmark logo.
+Scope of work:
 
-## Brand
+1. [playroll theme same exaclty color also](https://www.playroll.com/)  and styling
 
-- **Name / wordmark**: VisaHOBe Pte. Ltd.
-- **Tagline**: "Global HR, Payroll & Compliance, with Expert Support"
-- **Palette**: Deep navy/blue primary, white surfaces, soft gray sections, single accent (bright blue) for CTAs
-- **Type**: Clean modern sans-serif (Inter), large hero headings, generous spacing
-- **Logo**: Text wordmark — easy to swap for an uploaded logo later
+- Update `src/styles.css` to a Playroll-like palette: white base, deep ink text, soft grey borders, purple/blue primary, pink/orange/purple hero gradient.
+- Add reusable CSS utilities for smooth fade-up, soft hover lift, pill buttons, gradient text, and glass/blur cards.
+- Tune typography to reduce “font drift”: larger desktop headings, tighter tracking, lighter weights, readable mobile sizes.
+- Keep smooth transitions, but make them subtle and consistent across links, buttons, cards, menus, and images.
 
-## Pages (12 total)
+2. Header/navigation
 
-Top nav: Home · Solutions · Countries (dropdown) · Legal · Contact
+- Rework `src/components/site/Header.tsx` to visually match the reference: centered max-width, wordmark at left, product-style dropdown nav, search-style icon area, outline secondary button, purple primary button.
+- Improve the countries dropdown with a clean two-column floating panel.
+- Replace the current mobile dropdown with a proper mobile sheet/menu style: full-width white panel, grouped links, countries list, clear CTA, and consistent spacing.
+- Ensure mobile header remains compact and usable at 360–430px widths.
 
-| Route | Page |
-|---|---|
-| `/` | Home |
-| `/contact` | Contact |
-| `/global-recruitment` | Global Recruitment System |
-| `/legal` | Legal / Lawyer services |
-| `/countries/singapore` | Singapore |
-| `/countries/australia` | Australia |
-| `/countries/moldova` | Moldova |
-| `/countries/serbia` | Serbia |
-| `/countries/saudi-arabia` | Saudi Arabia |
-| `/countries/uae` | UAE |
-| `/countries/kuwait` | Kuwait |
-| `/countries/malaysia` | Malaysia |
+3. Homepage sections
 
-## Page structures
+- Rebuild `src/routes/index.tsx` to follow the Playroll page structure and spacing:
+  - Large hero with badge, headline, paragraph, CTA, right-side employee/contract card mockup, and large gradient background panel.
+  - Trusted logo/rating strip inside the hero bottom.
+  - “One platform to hire, manage & pay global teams” section with pill tabs and a dashboard/product mockup.
+  - CTA/workflow section: choose country/model, onboard/pay, scale confidently.
+  - Country coverage/resources section using VisaHOBe’s countries.
+  - Compliance/support section with feature cards and stats.
+  - Team-stage cards and final CTA.
+- Use VisaHOBe content, not Playroll text/logo, while matching the layout, color, and style closely.
 
-**Home** — Hero (headline, subhead, two CTAs, hero illustration/world-map graphic) → trust strip ("trusted by teams in 100+ countries") → 3-column value props (Hire, Pay, Stay Compliant) → Solutions grid (EOR, Payroll, Contractors, Visa & Immigration, Recruitment) → "How it works" 4-step → Country coverage map with links to the 8 country pages → Testimonials → FAQ → CTA band → Footer.
+4. Global Recruitment page
 
-**Country pages** (shared template, content varies per country) — Country hero (flag accent, country name, one-line value prop) → Quick facts card (currency, working hours, official languages, payroll cycle) → Employment essentials (contracts, probation, notice, termination) → Leave & benefits (annual, sick, parental, public holidays) → Tax & social contributions overview → Visa & work permit notes → "Hire in {country} with VisaHOBe" CTA → Footer. All facts written as general informational summaries, clearly marked "informational only — not legal advice."
+- Restyle `src/routes/global-recruitment.tsx` to match the new visual system:
+  - Playroll-like hero.
+  - Overview section.
+  - Workflow cards.
+  - ATS-style feature grid.
+  - Integrations strip.
+  - CTA with purple gradient and rounded card styling.
+- Keep the page responsive with two-column mobile/tablet grids where appropriate.
 
-**Global Recruitment System** — Overview, sourcing/screening/onboarding workflow, ATS-style feature grid, integrations strip, CTA.
+5. Contact page
 
-**Legal** — Corporate/immigration/employment law service cards, jurisdictions covered, "request a consultation" CTA.
+- Restyle `src/routes/contact.tsx` with the same theme: large rounded panels, soft gradient sidebar, cleaner inputs, required fields, and submit confirmation toast.
+- Ensure select/message required fields are correctly marked if the UI says they are required.
+- Keep it static UI only; no backend submission.
 
-**Contact** — Headline, two-column layout: contact form (name, work email, company, country, message — non-functional, shows a thank-you toast on submit) + company info card (placeholder email, phone, Singapore office address). Map placeholder image.
+6. Country pages
 
-**Shared**: Sticky header with nav + "Book a demo" button; rich footer with sitemap, country list, legal links, copyright.
+- Restyle `src/routes/countries/$slug.tsx` shared template to match the new design:
+  - Gradient country hero.
+  - Quick facts in responsive cards.
+  - Employment, leave, tax, and visa sections with consistent rounded cards.
+  - Other-market grid and final CTA.
+- Keep all existing country-specific content for Singapore, Australia, Moldova, Serbia, Saudi Arabia, UAE, Kuwait, and Malaysia.
+- Ensure country card grids render as 2 columns on small mobile/tablet where space allows and don’t overflow.
 
-## Design notes
+7. Footer
 
-- Consistent section rhythm (large vertical padding, max-w container)
-- Reusable components: `SectionHeading`, `FeatureCard`, `CountryCard`, `Stat`, `FAQItem`, `CTABand`, `Header`, `Footer`, `CountryPageTemplate`
-- Subtle blue gradient backgrounds on hero/CTA bands; cards with soft shadow and rounded corners
-- Mobile-first responsive; nav collapses to a sheet menu on mobile
-- Each route has unique `head()` metadata (title, description, og tags) for SEO
+- Update `src/components/site/Footer.tsx` to match the new design: clean white/soft grey footer, wordmark, grouped links, countries, contact details, and subtle borders.
 
-## Out of scope (this iteration)
+8. Responsive verification and fixes
 
-- Working backend / form submission storage
-- Authentication, dashboards, customer portal
-- Real legal/tax data verification per country (copy is general informational)
-- Custom logo upload (text wordmark used; can swap later)
+- After implementation, verify layouts at common breakpoints:
+  - Mobile: 375px / 390px / 430px
+  - Tablet: 768px / 1024px
+  - Desktop: 1280px / 1440px
+- Fix visible spacing/font drift, overflow, wrapping, grid issues, and CTA alignment problems.
 
-## Technical notes
+Technical notes:
 
-- TanStack Start file-based routing under `src/routes/` — one file per page; country pages under `src/routes/countries/`
-- Tailwind v4 design tokens updated in `src/styles.css` for the blue palette
-- Country data in a single `src/data/countries.ts` module consumed by both the home country grid and individual country pages, so adding/editing countries is one place
-- Replaces the placeholder `src/routes/index.tsx`
+- I’ll keep the TanStack Start route structure intact.
+- I won’t copy Playroll branding, logos, or proprietary images directly; I’ll recreate the visual style with VisaHOBe branding and CSS-built dashboard/card illustrations.
+- I’ll avoid editing `src/routeTree.gen.ts` because it is auto-generated.
+- No database or backend changes are needed.
