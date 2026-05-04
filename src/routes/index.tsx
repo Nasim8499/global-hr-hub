@@ -298,22 +298,57 @@ function Index() {
           </div>
           <p className="text-sm text-muted-foreground">Tap a country to see hiring essentials.</p>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
           {countries.map((c) => (
             <Link
               key={c.slug}
               to="/countries/$slug"
               params={{ slug: c.slug }}
-              className="group rounded-2xl border border-border bg-card p-5 hover-lift"
+              className="group relative overflow-hidden rounded-2xl border border-border bg-card hover-lift"
             >
-              <div className="flex items-center justify-between">
-                <span className="text-3xl">{c.flag}</span>
-                <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
+              <div
+                className="relative flex h-32 items-center justify-center text-7xl"
+                style={{ backgroundImage: "var(--gradient-soft)" }}
+                aria-hidden
+              >
+                <span className="absolute -right-3 -top-3 text-[8rem] opacity-20 blur-[1px] transition-transform duration-500 group-hover:scale-110">
+                  {c.flag}
+                </span>
+                <span className="relative drop-shadow-sm">{c.flag}</span>
               </div>
-              <h3 className="mt-4 text-base font-semibold text-foreground">{c.name}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{c.region} · {c.currency}</p>
+              <div className="p-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-foreground">{c.name}</h3>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">{c.region}</p>
+                <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{c.currency}</span>
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{c.payrollCycle.split(",")[0]}</span>
+                </div>
+              </div>
             </Link>
           ))}
+        </div>
+
+        {/* Sliding country marquee */}
+        <div className="mt-12">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Countries we cover
+          </p>
+          <div className="marquee-mask pause-on-hover mt-5 overflow-hidden">
+            <div className="animate-marquee flex w-max gap-3">
+              {[...countries, ...countries, ...countries].map((c, i) => (
+                <div
+                  key={`${c.slug}-${i}`}
+                  className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)]"
+                >
+                  <span className="text-xl">{c.flag}</span>
+                  <span>{c.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
