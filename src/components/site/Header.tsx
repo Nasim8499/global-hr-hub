@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ChevronDown, Globe2, Briefcase, Users, Wallet, Plane, ShieldCheck, Building2, BarChart3, Sparkles, Search } from "lucide-react";
 import { countries } from "@/data/countries";
@@ -29,6 +29,31 @@ type Open = null | "products" | "solutions" | "countries";
 export function Header() {
   const [mobile, setMobile] = useState(false);
   const [open, setOpen] = useState<Open>(null);
+  const navRef = useRef<HTMLElement | null>(null);
+
+  // Close on Escape; restore focus to trigger
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Close mobile sheet when resizing to desktop
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => mql.matches && setMobile(false);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  // Lock body scroll while mobile sheet is open
+  useEffect(() => {
+    document.body.style.overflow = mobile ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobile]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
@@ -41,18 +66,19 @@ export function Header() {
         </Link>
 
         <nav
+          ref={navRef}
           className="hidden items-center gap-1 lg:flex"
           onMouseLeave={() => setOpen(null)}
         >
-          <MegaTrigger label="Products"  isOpen={open === "products"}  onEnter={() => setOpen("products")} />
-          <MegaTrigger label="Solutions" isOpen={open === "solutions"} onEnter={() => setOpen("solutions")} />
-          <MegaTrigger label="Countries" isOpen={open === "countries"} onEnter={() => setOpen("countries")} />
+          <MegaTrigger label="Products"  panelId="mega-products"  isOpen={open === "products"}  onEnter={() => setOpen("products")}  onToggle={() => setOpen(open === "products" ? null : "products")} />
+          <MegaTrigger label="Solutions" panelId="mega-solutions" isOpen={open === "solutions"} onEnter={() => setOpen("solutions")} onToggle={() => setOpen(open === "solutions" ? null : "solutions")} />
+          <MegaTrigger label="Countries" panelId="mega-countries" isOpen={open === "countries"} onEnter={() => setOpen("countries")} onToggle={() => setOpen(open === "countries" ? null : "countries")} />
           {navLinks.map((l) => (
             <Link
               key={l.to}
               to={l.to}
               onMouseEnter={() => setOpen(null)}
-              className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               activeProps={{ className: "rounded-full px-4 py-2 text-sm font-medium text-foreground bg-secondary" }}
             >
               {l.label}
@@ -60,9 +86,9 @@ export function Header() {
           ))}
 
           {/* Mega panels */}
-          {open === "products" && <MegaPanel items={productsMenu} onClose={() => setOpen(null)} />}
-          {open === "solutions" && <MegaPanel items={solutionsMenu} onClose={() => setOpen(null)} />}
-          {open === "countries" && <CountriesPanel onClose={() => setOpen(null)} />}
+          {open === "products" && <MegaPanel id="mega-products" items={productsMenu} onClose={() => setOpen(null)} />}
+          {open === "solutions" && <MegaPanel id="mega-solutions" items={solutionsMenu} onClose={() => setOpen(null)} />}
+          {open === "countries" && <CountriesPanel id="mega-countries" onClose={() => setOpen(null)} />}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
@@ -129,11 +155,16 @@ export function Header() {
   );
 }
 
-function MegaTrigger({ label, isOpen, onEnter }: { label: string; isOpen: boolean; onEnter: () => void }) {
+function MegaTrigger({ label, panelId, isOpen, onEnter, onToggle }: { label: string; panelId: string; isOpen: boolean; onEnter: () => void; onToggle: () => void }) {
   return (
     <button
       onMouseEnter={onEnter}
-      className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition ${
+      onFocus={onEnter}
+      onClick={onToggle}
+      aria-haspopup="menu"
+      aria-expanded={isOpen}
+      aria-controls={panelId}
+      className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
         isOpen ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
       }`}
     >
@@ -143,18 +174,19 @@ function MegaTrigger({ label, isOpen, onEnter }: { label: string; isOpen: boolea
   );
 }
 
-function MegaPanel({ items, onClose }: { items: MegaItem[]; onClose: () => void }) {
+function MegaPanel({ id, items, onClose }: { id: string; items: MegaItem[]; onClose: () => void }) {
   return (
-    <div className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3">
+    <div id={id} role="menu" className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150">
       <div className="grid w-[640px] grid-cols-2 gap-2 rounded-2xl border border-border bg-popover p-3 shadow-[var(--shadow-card)]">
         {items.map(({ icon: Icon, label, desc, to }) => (
           <Link
             key={label}
             to={to}
+            role="menuitem"
             onClick={onClose}
-            className="group flex items-start gap-3 rounded-xl p-3 hover:bg-secondary"
+            className="group flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-secondary focus-visible:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[image:var(--gradient-purple)] text-primary-foreground">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[image:var(--gradient-purple)] text-primary-foreground transition-transform group-hover:scale-105">
               <Icon className="h-4 w-4" />
             </div>
             <div>
@@ -168,17 +200,18 @@ function MegaPanel({ items, onClose }: { items: MegaItem[]; onClose: () => void 
   );
 }
 
-function CountriesPanel({ onClose }: { onClose: () => void }) {
+function CountriesPanel({ id, onClose }: { id: string; onClose: () => void }) {
   return (
-    <div className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3">
-      <div className="grid w-[480px] grid-cols-2 gap-1 rounded-2xl border border-border bg-popover p-3 shadow-[var(--shadow-card)]">
+    <div id={id} role="menu" className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150">
+      <div className="grid max-h-[70vh] w-[480px] grid-cols-2 gap-1 overflow-y-auto rounded-2xl border border-border bg-popover p-3 shadow-[var(--shadow-card)]">
         {countries.map((c) => (
           <Link
             key={c.slug}
             to="/countries/$slug"
             params={{ slug: c.slug }}
+            role="menuitem"
             onClick={onClose}
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-popover-foreground hover:bg-secondary"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-popover-foreground transition-colors hover:bg-secondary focus-visible:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="text-lg">{c.flag}</span>
             <span>{c.name}</span>
