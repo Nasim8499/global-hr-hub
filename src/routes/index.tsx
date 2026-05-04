@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, Globe2, ShieldCheck, Wallet, Users, Briefcase,
   Plane, CheckCircle2, Sparkles, Building2, BarChart3, HeartHandshake,
+  Search, ArrowLeftRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 
@@ -97,6 +98,23 @@ const pillars = [
 function Index() {
   const [tab, setTab] = useState(0);
   const active = tabs[tab];
+  const [query, setQuery] = useState("");
+  const [region, setRegion] = useState<string>("All");
+  const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+
+  const regions = useMemo(
+    () => ["All", ...Array.from(new Set(countries.map((c) => c.region)))],
+    [],
+  );
+  const filteredCountries = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return countries.filter((c) => {
+      const matchesQ = !q || c.name.toLowerCase().includes(q) || c.region.toLowerCase().includes(q) || c.currency.toLowerCase().includes(q);
+      const matchesR = region === "All" || c.region === region;
+      return matchesQ && matchesR;
+    });
+  }, [query, region]);
+
   return (
     <SiteLayout>
       {/* HERO with full-width gradient panel */}
@@ -298,13 +316,48 @@ function Index() {
           </div>
           <p className="text-sm text-muted-foreground">Tap a country to see hiring essentials.</p>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-          {countries.map((c) => (
+
+        {/* Search + region filter */}
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <label className="relative flex-1">
+            <span className="sr-only">Search countries</span>
+            <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search countries, regions or currencies…"
+              className="h-12 w-full rounded-full border border-border bg-card pl-11 pr-4 text-sm text-foreground shadow-[var(--shadow-soft)] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
+              aria-label="Search countries"
+            />
+          </label>
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter by region">
+            {regions.map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRegion(r)}
+                aria-pressed={region === r}
+                className={`rounded-full px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] ${
+                  region === r
+                    ? "bg-[image:var(--gradient-purple)] text-primary-foreground shadow-[var(--shadow-soft)]"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/70"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+          {filteredCountries.map((c) => (
             <Link
               key={c.slug}
               to="/countries/$slug"
               params={{ slug: c.slug }}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card hover-lift"
+              aria-label={`View hiring essentials for ${c.name}`}
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
             >
               <div
                 className="relative flex h-32 items-center justify-center text-7xl"
@@ -316,7 +369,7 @@ function Index() {
                 </span>
                 <span className="relative drop-shadow-sm">{c.flag}</span>
               </div>
-              <div className="p-5">
+              <div className="flex flex-1 flex-col p-5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-semibold text-foreground">{c.name}</h3>
                   <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
@@ -326,28 +379,60 @@ function Index() {
                   <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{c.currency}</span>
                   <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{c.payrollCycle.split(",")[0]}</span>
                 </div>
+                <span
+                  aria-hidden
+                  className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-full bg-[image:var(--gradient-purple)] px-3 py-2 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-soft)] opacity-90 transition group-hover:opacity-100"
+                >
+                  View hiring essentials <ArrowRight className="h-3.5 w-3.5" />
+                </span>
               </div>
             </Link>
           ))}
+          {filteredCountries.length === 0 && (
+            <p className="col-span-full rounded-2xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              No countries match your search. Try a different term or region.
+            </p>
+          )}
         </div>
 
         {/* Sliding country marquee */}
         <div className="mt-12">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Countries we cover
-          </p>
-          <div className="marquee-mask pause-on-hover mt-5 overflow-hidden">
-            <div className="animate-marquee flex w-max gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Countries we cover
+            </p>
+            <button
+              type="button"
+              onClick={() => setDirection((d) => (d === "rtl" ? "ltr" : "rtl"))}
+              aria-label={`Switch marquee direction (currently ${direction === "rtl" ? "right to left" : "left to right"})`}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground shadow-[var(--shadow-soft)] hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
+            >
+              <ArrowLeftRight className="h-3.5 w-3.5" />
+              {direction === "rtl" ? "Right → Left" : "Left → Right"}
+            </button>
+          </div>
+          <div
+            className="marquee-mask pause-on-hover mt-5 overflow-hidden"
+            role="region"
+            aria-label="Countries we cover, scrolling list"
+          >
+            <ul className={`${direction === "rtl" ? "animate-marquee" : "animate-marquee-reverse"} flex w-max gap-3`}>
               {[...countries, ...countries, ...countries].map((c, i) => (
-                <div
-                  key={`${c.slug}-${i}`}
-                  className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)]"
-                >
-                  <span className="text-xl">{c.flag}</span>
-                  <span>{c.name}</span>
-                </div>
+                <li key={`${c.slug}-${i}`} className="shrink-0">
+                  <Link
+                    to="/countries/$slug"
+                    params={{ slug: c.slug }}
+                    aria-label={`${c.name} — view hiring essentials`}
+                    tabIndex={i < countries.length ? 0 : -1}
+                    aria-hidden={i >= countries.length}
+                    className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)] transition hover:border-[oklch(0.55_0.22_290)] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] focus-visible:ring-offset-2"
+                  >
+                    <span aria-hidden className="text-xl">{c.flag}</span>
+                    <span>{c.name}</span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
       </section>
