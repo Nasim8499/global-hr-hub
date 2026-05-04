@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, Globe2, ShieldCheck, Wallet, Users, Briefcase,
   Plane, CheckCircle2, Sparkles, Building2, BarChart3, HeartHandshake,
+  Search, ArrowLeftRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 
@@ -97,6 +98,23 @@ const pillars = [
 function Index() {
   const [tab, setTab] = useState(0);
   const active = tabs[tab];
+  const [query, setQuery] = useState("");
+  const [region, setRegion] = useState<string>("All");
+  const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+
+  const regions = useMemo(
+    () => ["All", ...Array.from(new Set(countries.map((c) => c.region)))],
+    [],
+  );
+  const filteredCountries = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return countries.filter((c) => {
+      const matchesQ = !q || c.name.toLowerCase().includes(q) || c.region.toLowerCase().includes(q) || c.currency.toLowerCase().includes(q);
+      const matchesR = region === "All" || c.region === region;
+      return matchesQ && matchesR;
+    });
+  }, [query, region]);
+
   return (
     <SiteLayout>
       {/* HERO with full-width gradient panel */}
