@@ -386,6 +386,16 @@ function Index() {
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={exportCsv}
+            disabled={filteredCountries.length === 0}
+            aria-label={`Export ${filteredCountries.length} filtered countries as CSV`}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--gradient-purple)] px-4 py-2 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-soft)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] focus-visible:ring-offset-2"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export results ({filteredCountries.length})
+          </button>
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
@@ -454,7 +464,11 @@ function Index() {
             role="region"
             aria-label="Countries we cover, scrolling list"
           >
-            <ul className={`${direction === "rtl" ? "animate-marquee" : "animate-marquee-reverse"} flex w-max gap-3`}>
+            <ul
+              ref={marqueeListRef}
+              onKeyDown={onMarqueeKeyDown}
+              className={`${direction === "rtl" ? "animate-marquee" : "animate-marquee-reverse"} flex w-max gap-3 focus-within:[animation-play-state:paused]`}
+            >
               {[...countries, ...countries, ...countries].map((c, i) => (
                 <li key={`${c.slug}-${i}`} className="shrink-0">
                   <Link
@@ -463,6 +477,7 @@ function Index() {
                     aria-label={`${c.name} — view hiring essentials`}
                     tabIndex={i < countries.length ? 0 : -1}
                     aria-hidden={i >= countries.length}
+                    data-marquee-item={i < countries.length ? "true" : undefined}
                     className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-[var(--shadow-card)] transition hover:border-[oklch(0.55_0.22_290)] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] focus-visible:ring-offset-2"
                   >
                     <span aria-hidden className="text-xl">{c.flag}</span>
