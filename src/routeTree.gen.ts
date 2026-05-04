@@ -13,6 +13,7 @@ import { Route as LegalRouteImport } from './routes/legal'
 import { Route as GlobalRecruitmentRouteImport } from './routes/global-recruitment'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CountriesSlugRouteImport } from './routes/countries/$slug'
 
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
@@ -34,18 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CountriesSlugRoute = CountriesSlugRouteImport.update({
+  id: '/countries/$slug',
+  path: '/countries/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/global-recruitment': typeof GlobalRecruitmentRoute
   '/legal': typeof LegalRoute
+  '/countries/$slug': typeof CountriesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/global-recruitment': typeof GlobalRecruitmentRoute
   '/legal': typeof LegalRoute
+  '/countries/$slug': typeof CountriesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,25 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/global-recruitment': typeof GlobalRecruitmentRoute
   '/legal': typeof LegalRoute
+  '/countries/$slug': typeof CountriesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact' | '/global-recruitment' | '/legal'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/global-recruitment'
+    | '/legal'
+    | '/countries/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/global-recruitment' | '/legal'
-  id: '__root__' | '/' | '/contact' | '/global-recruitment' | '/legal'
+  to: '/' | '/contact' | '/global-recruitment' | '/legal' | '/countries/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/contact'
+    | '/global-recruitment'
+    | '/legal'
+    | '/countries/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +87,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GlobalRecruitmentRoute: typeof GlobalRecruitmentRoute
   LegalRoute: typeof LegalRoute
+  CountriesSlugRoute: typeof CountriesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/countries/$slug': {
+      id: '/countries/$slug'
+      path: '/countries/$slug'
+      fullPath: '/countries/$slug'
+      preLoaderRoute: typeof CountriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +135,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GlobalRecruitmentRoute: GlobalRecruitmentRoute,
   LegalRoute: LegalRoute,
+  CountriesSlugRoute: CountriesSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
