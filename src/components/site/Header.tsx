@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ChevronDown, Globe2, Briefcase, Users, Wallet, Plane, ShieldCheck, Building2, BarChart3, Sparkles, Search } from "lucide-react";
 import { countries } from "@/data/countries";
@@ -30,16 +30,100 @@ export function Header() {
   const [mobile, setMobile] = useState(false);
   const [open, setOpen] = useState<Open>(null);
   const navRef = useRef<HTMLElement | null>(null);
+  const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const mobileSheetRef = useRef<HTMLDivElement | null>(null);
+  const mobileToggleRef = useRef<HTMLButtonElement | null>(null);
 
   // Close on Escape; restore focus to trigger
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(null);
+      if (e.key === "Escape") {
+        setOpen(null);
+        triggerRefs.current[open]?.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // Focus first item when panel opens (keyboard activation)
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => {
+      const first = panelRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
+      first?.focus();
+    }, 30);
+    return () => clearTimeout(t);
+  }, [open]);
+
+  // Roving keyboard nav within the open panel
+  const onPanelKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    const items = Array.from(
+      panelRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []
+    );
+    if (items.length === 0) return;
+    const active = document.activeElement as HTMLElement | null;
+    const idx = active ? items.indexOf(active) : -1;
+    const focusAt = (i: number) => items[(i + items.length) % items.length]?.focus();
+    switch (e.key) {
+      case "ArrowDown":
+      case "ArrowRight":
+        e.preventDefault();
+        focusAt(idx + 1);
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+        e.preventDefault();
+        focusAt(idx - 1);
+        break;
+      case "Home":
+        e.preventDefault();
+        items[0]?.focus();
+        break;
+      case "End":
+        e.preventDefault();
+        items[items.length - 1]?.focus();
+        break;
+      case "Tab": {
+        // Focus trap: keep tabbing inside the panel
+        e.preventDefault();
+        focusAt(idx + (e.shiftKey ? -1 : 1));
+        break;
+      }
+    }
+  }, []);
+
+  // Mobile sheet: focus trap + Escape
+  useEffect(() => {
+    if (!mobile) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobile(false);
+        mobileToggleRef.current?.focus();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const focusables = mobileSheetRef.current?.querySelectorAll<HTMLElement>(
+        'a, button, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables || focusables.length === 0) return;
+      const list = Array.from(focusables);
+      const first = list[0];
+      const last = list[list.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobile]);
 
   // Close mobile sheet when resizing to desktop
   useEffect(() => {
@@ -70,9 +154,9 @@ export function Header() {
           className="hidden items-center gap-1 lg:flex"
           onMouseLeave={() => setOpen(null)}
         >
-          <MegaTrigger label="Products"  panelId="mega-products"  isOpen={open === "products"}  onEnter={() => setOpen("products")}  onToggle={() => setOpen(open === "products" ? null : "products")} />
-          <MegaTrigger label="Solutions" panelId="mega-solutions" isOpen={open === "solutions"} onEnter={() => setOpen("solutions")} onToggle={() => setOpen(open === "solutions" ? null : "solutions")} />
-          <MegaTrigger label="Countries" panelId="mega-countries" isOpen={open === "countries"} onEnter={() => setOpen("countries")} onToggle={() => setOpen(open === "countries" ? null : "countries")} />
+          <MegaTrigger refCb={(el) => (triggerRefs.current.products = el)}  label="Products"  panelId="mega-products"  isOpen={open === "products"}  onEnter={() => setOpen("products")}  onToggle={() => setOpen(open === "products" ? null : "products")} />
+          <MegaTrigger refCb={(el) => (triggerRefs.current.solutions = el)} label="Solutions" panelId="mega-solutions" isOpen={open === "solutions"} onEnter={() => setOpen("solutions")} onToggle={() => setOpen(open === "solutions" ? null : "solutions")} />
+          <MegaTrigger refCb={(el) => (triggerRefs.current.countries = el)} label="Countries" panelId="mega-countries" isOpen={open === "countries"} onEnter={() => setOpen("countries")} onToggle={() => setOpen(open === "countries" ? null : "countries")} />
           {navLinks.map((l) => (
             <Link
               key={l.to}
@@ -86,9 +170,9 @@ export function Header() {
           ))}
 
           {/* Mega panels */}
-          {open === "products" && <MegaPanel id="mega-products" items={productsMenu} onClose={() => setOpen(null)} />}
-          {open === "solutions" && <MegaPanel id="mega-solutions" items={solutionsMenu} onClose={() => setOpen(null)} />}
-          {open === "countries" && <CountriesPanel id="mega-countries" onClose={() => setOpen(null)} />}
+          {open === "products" && <MegaPanel panelRef={panelRef} onKeyDown={onPanelKeyDown} id="mega-products" items={productsMenu} onClose={() => setOpen(null)} />}
+          {open === "solutions" && <MegaPanel panelRef={panelRef} onKeyDown={onPanelKeyDown} id="mega-solutions" items={solutionsMenu} onClose={() => setOpen(null)} />}
+          {open === "countries" && <CountriesPanel panelRef={panelRef} onKeyDown={onPanelKeyDown} id="mega-countries" onClose={() => setOpen(null)} />}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
@@ -100,17 +184,27 @@ export function Header() {
         </div>
 
         <button
+          ref={mobileToggleRef}
           className="rounded-md p-2 text-foreground lg:hidden"
           onClick={() => setMobile((o) => !o)}
-          aria-label="Toggle menu"
+          aria-label={mobile ? "Close menu" : "Open menu"}
+          aria-expanded={mobile}
+          aria-controls="mobile-nav-sheet"
         >
           {mobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {mobile && (
-        <div className="border-t border-border bg-background lg:hidden">
-          <div className="mx-auto max-w-7xl space-y-4 px-4 py-5">
+        <div
+          id="mobile-nav-sheet"
+          ref={mobileSheetRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Main navigation"
+          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-border bg-background lg:hidden"
+        >
+          <div className="mx-auto max-w-7xl space-y-4 px-4 py-5 pb-[max(env(safe-area-inset-bottom),24px)]">
             <MobileGroup title="Products" items={productsMenu} onClose={() => setMobile(false)} />
             <MobileGroup title="Solutions" items={solutionsMenu} onClose={() => setMobile(false)} />
             <div>
@@ -124,7 +218,7 @@ export function Header() {
                     to="/countries/$slug"
                     params={{ slug: c.slug }}
                     onClick={() => setMobile(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-foreground hover:bg-secondary"
+                    className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <span>{c.flag}</span>
                     <span className="truncate">{c.name}</span>
@@ -138,7 +232,7 @@ export function Header() {
                   key={l.to}
                   to={l.to}
                   onClick={() => setMobile(false)}
-                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary"
+                  className="flex min-h-11 items-center rounded-xl px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {l.label}
                 </Link>
@@ -155,12 +249,19 @@ export function Header() {
   );
 }
 
-function MegaTrigger({ label, panelId, isOpen, onEnter, onToggle }: { label: string; panelId: string; isOpen: boolean; onEnter: () => void; onToggle: () => void }) {
+function MegaTrigger({ label, panelId, isOpen, onEnter, onToggle, refCb }: { label: string; panelId: string; isOpen: boolean; onEnter: () => void; onToggle: () => void; refCb?: (el: HTMLButtonElement | null) => void }) {
   return (
     <button
+      ref={refCb}
       onMouseEnter={onEnter}
       onFocus={onEnter}
       onClick={onToggle}
+      onKeyDown={(e) => {
+        if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (!isOpen) onEnter();
+        }
+      }}
       aria-haspopup="menu"
       aria-expanded={isOpen}
       aria-controls={panelId}
@@ -174,9 +275,9 @@ function MegaTrigger({ label, panelId, isOpen, onEnter, onToggle }: { label: str
   );
 }
 
-function MegaPanel({ id, items, onClose }: { id: string; items: MegaItem[]; onClose: () => void }) {
+function MegaPanel({ id, items, onClose, panelRef, onKeyDown }: { id: string; items: MegaItem[]; onClose: () => void; panelRef?: React.Ref<HTMLDivElement>; onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void }) {
   return (
-    <div id={id} role="menu" className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150">
+    <div ref={panelRef} onKeyDown={onKeyDown} id={id} role="menu" aria-label={id} className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150">
       <div className="grid w-[640px] grid-cols-2 gap-2 rounded-2xl border border-border bg-popover p-3 shadow-[var(--shadow-card)]">
         {items.map(({ icon: Icon, label, desc, to }) => (
           <Link
@@ -200,9 +301,9 @@ function MegaPanel({ id, items, onClose }: { id: string; items: MegaItem[]; onCl
   );
 }
 
-function CountriesPanel({ id, onClose }: { id: string; onClose: () => void }) {
+function CountriesPanel({ id, onClose, panelRef, onKeyDown }: { id: string; onClose: () => void; panelRef?: React.Ref<HTMLDivElement>; onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void }) {
   return (
-    <div id={id} role="menu" className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150">
+    <div ref={panelRef} onKeyDown={onKeyDown} id={id} role="menu" aria-label="Countries" className="absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-150">
       <div className="grid max-h-[70vh] w-[480px] grid-cols-2 gap-1 overflow-y-auto rounded-2xl border border-border bg-popover p-3 shadow-[var(--shadow-card)]">
         {countries.map((c) => (
           <Link
@@ -232,7 +333,7 @@ function MobileGroup({ title, items, onClose }: { title: string; items: MegaItem
             key={label}
             to={to}
             onClick={onClose}
-            className="flex items-start gap-3 rounded-xl p-3 hover:bg-secondary"
+            className="flex min-h-12 items-start gap-3 rounded-xl p-3 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[image:var(--gradient-purple)] text-primary-foreground">
               <Icon className="h-4 w-4" />
