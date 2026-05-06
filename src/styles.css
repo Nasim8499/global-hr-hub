@@ -91,6 +91,19 @@
   --label-tracking: 0.14em;
   --value-size: 1.0625rem;
   --value-size-lg: 1.125rem;
+
+  --shadow-elegant: 0 24px 60px -24px rgba(91, 43, 255, 0.35);
+  --shadow-card: 0 8px 28px -12px rgba(91, 43, 255, 0.18);
+  --shadow-soft: 0 2px 12px -4px rgba(60, 30, 120, 0.10);
+
+  --sidebar: oklch(0.985 0.005 285);
+  --sidebar-foreground: oklch(0.18 0.02 280);
+  --sidebar-primary: oklch(0.48 0.24 285);
+  --sidebar-primary-foreground: oklch(0.99 0.005 300);
+  --sidebar-accent: oklch(0.95 0.02 285);
+  --sidebar-accent-foreground: oklch(0.25 0.06 285);
+  --sidebar-border: oklch(0.93 0.008 285);
+  --sidebar-ring: oklch(0.55 0.22 290);
 }
 
 @media (min-width: 768px) {
@@ -108,9 +121,7 @@
   }
 }
 
-.essential-card {
-  border-radius: var(--card-radius-lg);
-}
+.essential-card { border-radius: var(--card-radius-lg); }
 .essential-card .essential-media {
   aspect-ratio: var(--card-img-aspect);
   border-top-left-radius: var(--card-radius-lg);
@@ -122,12 +133,8 @@
   transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .essential-card:hover .essential-media img,
-.essential-card:focus-within .essential-media img {
-  transform: scale(1.06);
-}
-.essential-card .essential-body {
-  padding: var(--card-pad);
-}
+.essential-card:focus-within .essential-media img { transform: scale(1.06); }
+.essential-card .essential-body { padding: var(--card-pad); }
 .essential-card .essential-label {
   font-size: var(--label-size);
   letter-spacing: var(--label-tracking);
@@ -142,20 +149,6 @@
 @media (prefers-reduced-motion: reduce) {
   .essential-card .essential-media img { transition: none; }
   .essential-card:hover .essential-media img { transform: none; }
-}
-
-  --shadow-elegant: 0 24px 60px -24px rgba(91, 43, 255, 0.35);
-  --shadow-card: 0 8px 28px -12px rgba(91, 43, 255, 0.18);
-  --shadow-soft: 0 2px 12px -4px rgba(60, 30, 120, 0.10);
-
-  --sidebar: oklch(0.985 0.005 285);
-  --sidebar-foreground: oklch(0.18 0.02 280);
-  --sidebar-primary: oklch(0.48 0.24 285);
-  --sidebar-primary-foreground: oklch(0.99 0.005 300);
-  --sidebar-accent: oklch(0.95 0.02 285);
-  --sidebar-accent-foreground: oklch(0.25 0.06 285);
-  --sidebar-border: oklch(0.93 0.008 285);
-  --sidebar-ring: oklch(0.55 0.22 290);
 }
 
 .dark {
