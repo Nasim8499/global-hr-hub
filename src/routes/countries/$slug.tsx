@@ -4,6 +4,17 @@ import { useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries, getCountry, type Country } from "@/data/countries";
 import { visaTypes } from "@/data/visaTypes";
+import iconCurrency from "@/assets/icon-currency.jpg";
+import iconPayroll from "@/assets/icon-payroll.jpg";
+import iconHours from "@/assets/icon-hours.jpg";
+import iconLanguage from "@/assets/icon-language.jpg";
+
+const essentialImages: Record<string, string> = {
+  Currency: iconCurrency,
+  "Payroll cycle": iconPayroll,
+  "Working hours": iconHours,
+  "Official language": iconLanguage,
+};
 
 export const Route = createFileRoute("/countries/$slug")({
   loader: ({ params }) => {
@@ -233,18 +244,18 @@ function HiringEssentials({ country }: { country: Country }) {
 
         <div className="mt-8">
           {active === "overview" && (
-            <div role="tabpanel" id="he-panel-overview" aria-labelledby="he-tab-overview" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <EssentialCard icon={DollarSign} label="Currency" value={country.currency} />
-              <EssentialCard icon={Calendar} label="Payroll cycle" value={country.payrollCycle} />
-              <EssentialCard icon={Clock} label="Working hours" value={country.workingHours} />
-              <EssentialCard icon={Globe2} label="Official language" value={country.language} />
+            <div role="tabpanel" id="he-panel-overview" aria-labelledby="he-tab-overview" className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              <EssentialCard label="Currency" value={country.currency} />
+              <EssentialCard label="Payroll cycle" value={country.payrollCycle} />
+              <EssentialCard label="Working hours" value={country.workingHours} />
+              <EssentialCard label="Official language" value={country.language} />
             </div>
           )}
 
           {active === "payroll" && (
-            <div role="tabpanel" id="he-panel-payroll" aria-labelledby="he-tab-payroll" className="grid gap-4 sm:grid-cols-2">
-              <EssentialCard icon={DollarSign} label="Currency" value={country.currency} />
-              <EssentialCard icon={Calendar} label="Payroll cycle" value={country.payrollCycle} />
+            <div role="tabpanel" id="he-panel-payroll" aria-labelledby="he-tab-payroll" className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+              <EssentialCard label="Currency" value={country.currency} />
+              <EssentialCard label="Payroll cycle" value={country.payrollCycle} />
               <div className="sm:col-span-2 rounded-2xl border border-border bg-card p-6">
                 <h3 className="text-base font-semibold text-foreground">Tax & contributions</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{country.tax}</p>
@@ -339,16 +350,27 @@ function HiringEssentials({ country }: { country: Country }) {
   );
 }
 
-function EssentialCard({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
+function EssentialCard({ label, value }: { label: string; value: string }) {
+  const img = essentialImages[label];
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
-      <div className="flex items-center gap-3 text-muted-foreground">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground">
-          <Icon className="h-4 w-4" />
-        </div>
-        <span className="text-xs uppercase tracking-wider">{label}</span>
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)] hover-lift">
+      <div className="relative aspect-[5/3] w-full overflow-hidden">
+        {img ? (
+          <img
+            src={img}
+            alt=""
+            loading="lazy"
+            width={512}
+            height={512}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : null}
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
       </div>
-      <p className="mt-3 text-base font-semibold text-foreground">{value}</p>
+      <div className="p-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+        <p className="mt-1.5 text-lg font-semibold leading-snug text-foreground">{value}</p>
+      </div>
     </div>
   );
 }
