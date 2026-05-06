@@ -353,8 +353,8 @@ function HiringEssentials({ country }: { country: Country }) {
 function EssentialCard({ label, value }: { label: string; value: string }) {
   const img = essentialImages[label];
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)] hover-lift">
-      <div className="relative aspect-[5/3] w-full overflow-hidden">
+    <div className="essential-card group relative overflow-hidden border border-border bg-card shadow-[var(--shadow-soft)] hover-lift">
+      <div className="essential-media relative w-full overflow-hidden">
         {img ? (
           <img
             src={img}
@@ -362,14 +362,14 @@ function EssentialCard({ label, value }: { label: string; value: string }) {
             loading="lazy"
             width={512}
             height={512}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full"
           />
         ) : null}
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
       </div>
-      <div className="p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
-        <p className="mt-1.5 text-lg font-semibold leading-snug text-foreground">{value}</p>
+      <div className="essential-body">
+        <p className="essential-label text-muted-foreground">{label}</p>
+        <p className="essential-value mt-1.5 text-foreground">{value}</p>
       </div>
     </div>
   );
