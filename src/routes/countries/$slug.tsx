@@ -353,23 +353,15 @@ function HiringEssentials({ country }: { country: Country }) {
 function EssentialCard({ label, value }: { label: string; value: string }) {
   const img = essentialImages[label];
   return (
-    <div className="essential-card group relative overflow-hidden border border-border bg-card shadow-[var(--shadow-soft)] hover-lift">
-      <div className="essential-media relative w-full overflow-hidden">
+    <div className="essential-card hover-lift" data-label={label}>
+      <div className="essential-media">
         {img ? (
-          <img
-            src={img}
-            alt=""
-            loading="lazy"
-            width={512}
-            height={512}
-            className="absolute inset-0 h-full w-full"
-          />
+          <img src={img} alt="" loading="lazy" width={512} height={512} />
         ) : null}
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
       </div>
       <div className="essential-body">
-        <p className="essential-label text-muted-foreground">{label}</p>
-        <p className="essential-value mt-1.5 text-foreground">{value}</p>
+        <p className="essential-label">{label}</p>
+        <p className="essential-value">{value}</p>
       </div>
     </div>
   );
