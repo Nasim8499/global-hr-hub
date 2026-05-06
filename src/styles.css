@@ -78,6 +78,20 @@
   --gradient-soft: linear-gradient(180deg, oklch(0.985 0.01 300), oklch(1 0 0));
   --gradient-purple: linear-gradient(135deg, #5B2BFF 0%, #8A4BFF 100%);
 
+  /* Reusable spacing & typography tokens for cards */
+  --card-radius: 1.25rem;
+  --card-radius-lg: 1.5rem;
+  --card-pad: 1.25rem;
+  --card-pad-lg: 1.5rem;
+  --card-gap: 1rem;
+  --card-gap-lg: 1.25rem;
+  --card-img-aspect: 5 / 3;
+  --card-img-radius: 1.25rem;
+  --label-size: 0.6875rem;
+  --label-tracking: 0.14em;
+  --value-size: 1.0625rem;
+  --value-size-lg: 1.125rem;
+
   --shadow-elegant: 0 24px 60px -24px rgba(91, 43, 255, 0.35);
   --shadow-card: 0 8px 28px -12px rgba(91, 43, 255, 0.18);
   --shadow-soft: 0 2px 12px -4px rgba(60, 30, 120, 0.10);
@@ -90,6 +104,51 @@
   --sidebar-accent-foreground: oklch(0.25 0.06 285);
   --sidebar-border: oklch(0.93 0.008 285);
   --sidebar-ring: oklch(0.55 0.22 290);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --card-pad: 1.5rem;
+    --card-gap: 1.25rem;
+    --value-size: 1.125rem;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --card-pad: 1.625rem;
+    --card-gap: 1.5rem;
+    --value-size: 1.1875rem;
+  }
+}
+
+.essential-card { border-radius: var(--card-radius-lg); }
+.essential-card .essential-media {
+  aspect-ratio: var(--card-img-aspect);
+  border-top-left-radius: var(--card-radius-lg);
+  border-top-right-radius: var(--card-radius-lg);
+}
+.essential-card .essential-media img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.essential-card:hover .essential-media img,
+.essential-card:focus-within .essential-media img { transform: scale(1.06); }
+.essential-card .essential-body { padding: var(--card-pad); }
+.essential-card .essential-label {
+  font-size: var(--label-size);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.essential-card .essential-value {
+  font-size: var(--value-size);
+  font-weight: 600;
+  line-height: 1.35;
+}
+@media (prefers-reduced-motion: reduce) {
+  .essential-card .essential-media img { transition: none; }
+  .essential-card:hover .essential-media img { transform: none; }
 }
 
 .dark {
