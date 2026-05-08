@@ -7,6 +7,25 @@ import {
 import { useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
+import countrySingapore from "@/assets/country-singapore.jpg";
+import countryAustralia from "@/assets/country-australia.jpg";
+import countryMoldova from "@/assets/country-moldova.jpg";
+import countrySerbia from "@/assets/country-serbia.jpg";
+import countrySaudi from "@/assets/country-saudi.jpg";
+import countryUae from "@/assets/country-uae.jpg";
+import countryKuwait from "@/assets/country-kuwait.jpg";
+import countryMalaysia from "@/assets/country-malaysia.jpg";
+
+const countryImages: Record<string, string> = {
+  singapore: countrySingapore,
+  australia: countryAustralia,
+  moldova: countryMoldova,
+  serbia: countrySerbia,
+  "saudi-arabia": countrySaudi,
+  uae: countryUae,
+  kuwait: countryKuwait,
+  malaysia: countryMalaysia,
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -407,18 +426,30 @@ function Index() {
               aria-label={`View hiring essentials for ${c.name}`}
               className="country-card group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)] hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
             >
-              {/* Full-cover flag */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 flex items-center justify-center text-[18rem] leading-none transition-transform duration-700 ease-out group-hover:scale-110"
-              >
-                {c.flag}
-              </span>
-              {/* Glass + gradient overlays */}
-              <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-              <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ backgroundImage: "var(--gradient-purple)", mixBlendMode: "overlay" }} />
+              {/* Full-cover destination image */}
+              {countryImages[c.slug] ? (
+                <img
+                  src={countryImages[c.slug]}
+                  alt=""
+                  loading="lazy"
+                  width={768}
+                  height={960}
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+              ) : (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 flex items-center justify-center text-[18rem] leading-none transition-transform duration-700 ease-out group-hover:scale-110"
+                >
+                  {c.flag}
+                </span>
+              )}
+              {/* Gradient overlays for legibility */}
+              <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
+              <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" style={{ backgroundImage: "var(--gradient-purple)", mixBlendMode: "overlay" }} />
               {/* Region chip */}
-              <span className="absolute left-4 top-4 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+              <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                <span className="text-base leading-none">{c.flag}</span>
                 {c.region}
               </span>
               <span className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/15 text-white backdrop-blur-md transition-transform duration-300 group-hover:translate-x-1 group-hover:bg-white group-hover:text-foreground">
