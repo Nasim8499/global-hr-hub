@@ -963,6 +963,7 @@ function SectionNewsletter() {
 
 function ReadingProgress() {
   const [pct, setPct] = useState(0);
+  const [rtl, setRtl] = useState(false);
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement;
@@ -971,13 +972,17 @@ function ReadingProgress() {
       setPct(max > 0 ? Math.min(100, (scrolled / max) * 100) : 0);
     };
     onScroll();
+    setRtl(document.documentElement.dir === "rtl");
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
   }, []);
   return (
-    <div aria-hidden className="fixed left-0 right-0 top-0 z-[60] h-1 bg-transparent">
-      <div className="h-full origin-left transition-[width] duration-150 ease-out" style={{ width: `${pct}%`, backgroundImage: "var(--gradient-purple)" }} />
+    <div role="progressbar" aria-label="Reading progress" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} className="fixed left-0 right-0 top-0 z-[60] h-1 bg-transparent">
+      <div
+        className="h-full transition-[width] duration-150 ease-out motion-reduce:transition-none"
+        style={{ width: `${pct}%`, backgroundImage: "var(--gradient-purple)", marginLeft: rtl ? "auto" : 0, transformOrigin: rtl ? "right center" : "left center" }}
+      />
     </div>
   );
 }
@@ -985,17 +990,23 @@ function ReadingProgress() {
 function BackToTop() {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 600);
+    const onScroll = () => {
+      const threshold = Math.max(600, window.innerHeight * 0.8);
+      setShow(window.scrollY > threshold);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
   }, []);
   return (
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
-      className={`fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full bg-[image:var(--gradient-purple)] text-primary-foreground shadow-[var(--shadow-elegant)] transition-all duration-300 hover:opacity-95 ${show ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"}`}
+      tabIndex={show ? 0 : -1}
+      aria-hidden={!show}
+      className={`fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full bg-[image:var(--gradient-purple)] text-primary-foreground shadow-[var(--shadow-elegant)] transition-all duration-300 ease-out hover:opacity-95 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[oklch(0.55_0.22_290)] motion-reduce:transition-none ${show ? "translate-y-0 scale-100 opacity-100" : "translate-y-4 scale-90 opacity-0 pointer-events-none"}`}
     >
       <ChevronUp className="h-5 w-5" />
     </button>
@@ -1040,6 +1051,26 @@ function ExtendedToc() {
     return () => io.disconnect();
   }, []);
 
+  const onAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    const target = document.getElementById(id);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", `#${id}`);
+      target.setAttribute("tabindex", "-1");
+      (target as HTMLElement).focus({ preventScroll: true });
+    }
+    setOpen(false);
+  };
+  const onKeyNav = (e: React.KeyboardEvent<HTMLUListElement>) => {
+    const links = Array.from(e.currentTarget.querySelectorAll<HTMLAnchorElement>("a"));
+    const idx = links.indexOf(document.activeElement as HTMLAnchorElement);
+    if (e.key === "ArrowDown") { e.preventDefault(); links[Math.min(links.length - 1, idx + 1)]?.focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); links[Math.max(0, idx - 1)]?.focus(); }
+    else if (e.key === "Home") { e.preventDefault(); links[0]?.focus(); }
+    else if (e.key === "End") { e.preventDefault(); links[links.length - 1]?.focus(); }
+  };
+
   if (items.length === 0) return null;
   return (
     <>
@@ -1047,10 +1078,17 @@ function ExtendedToc() {
       <aside aria-label="Section navigation" className="pointer-events-none fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 xl:block">
         <nav className="pointer-events-auto rounded-2xl border border-border bg-card/90 p-3 shadow-[var(--shadow-card)] backdrop-blur">
           <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">On this page</p>
-          <ul className="flex max-h-[60vh] flex-col gap-0.5 overflow-y-auto">
+          <ul onKeyDown={onKeyNav} className="flex max-h-[60vh] flex-col gap-0.5 overflow-y-auto">
             {items.map((it) => (
               <li key={it.id}>
-                <a href={`#${it.id}`} className={`block rounded-lg px-3 py-1.5 text-xs font-medium transition ${active === it.id ? "bg-[image:var(--gradient-purple)] text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}>{it.label}</a>
+                <a
+                  href={`#${it.id}`}
+                  onClick={(e) => onAnchorClick(e, it.id)}
+                  aria-current={active === it.id ? "true" : undefined}
+                  className={`block rounded-lg px-3 py-1.5 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] focus-visible:ring-offset-1 motion-reduce:transition-none ${active === it.id ? "bg-[image:var(--gradient-purple)] text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+                >
+                  {it.label}
+                </a>
               </li>
             ))}
           </ul>
@@ -1058,16 +1096,23 @@ function ExtendedToc() {
       </aside>
       {/* Mobile floating TOC button + sheet */}
       <div className="fixed bottom-6 left-6 z-50 xl:hidden">
-        <button type="button" onClick={() => setOpen((v) => !v)} aria-label="Open section navigation" aria-expanded={open} className="grid h-12 w-12 place-items-center rounded-full bg-card text-foreground shadow-[var(--shadow-elegant)] border border-border">
+        <button type="button" onClick={() => setOpen((v) => !v)} aria-label="Open section navigation" aria-expanded={open} className="grid h-12 w-12 place-items-center rounded-full bg-card text-foreground shadow-[var(--shadow-elegant)] border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]">
           <List className="h-5 w-5" />
         </button>
         {open && (
           <div className="mt-3 w-64 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-elegant)]">
             <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">On this page</p>
-            <ul className="flex max-h-[55vh] flex-col gap-0.5 overflow-y-auto">
+            <ul onKeyDown={onKeyNav} className="flex max-h-[55vh] flex-col gap-0.5 overflow-y-auto">
               {items.map((it) => (
                 <li key={it.id}>
-                  <a href={`#${it.id}`} onClick={() => setOpen(false)} className={`block rounded-lg px-3 py-2 text-xs font-medium ${active === it.id ? "bg-[image:var(--gradient-purple)] text-primary-foreground" : "text-foreground hover:bg-secondary"}`}>{it.label}</a>
+                  <a
+                    href={`#${it.id}`}
+                    onClick={(e) => onAnchorClick(e, it.id)}
+                    aria-current={active === it.id ? "true" : undefined}
+                    className={`block rounded-lg px-3 py-2 text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)] ${active === it.id ? "bg-[image:var(--gradient-purple)] text-primary-foreground" : "text-foreground hover:bg-secondary"}`}
+                  >
+                    {it.label}
+                  </a>
                 </li>
               ))}
             </ul>
