@@ -242,6 +242,16 @@
 /* RTL: flip arrow direction */
 [dir="rtl"] .country-card .group-hover\:translate-x-1 { --tw-translate-x: -0.25rem; }
 
+/* ---- Reveal-on-scroll for extended sections ---- */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 700ms cubic-bezier(.2,.7,.2,1), transform 700ms cubic-bezier(.2,.7,.2,1); will-change: opacity, transform; }
+.reveal.is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* Smoother momentum-style scrolling for long pages */
+html { scroll-behavior: smooth; }
+
 .dark {
   --background: oklch(0.14 0.02 280);
   --foreground: oklch(0.98 0.005 280);

@@ -6,7 +6,8 @@ import {
   TrendingUp, Lock, Layers, Lightbulb, Star, Quote, BookOpen, PieChart,
   Headphones, Map,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronUp, List } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 import countrySingapore from "@/assets/country-singapore.jpg";
@@ -597,7 +598,14 @@ function Index() {
           </div>
         </div>
       </section>
-      <ExtendedSections />
+      <ReadingProgress />
+      <DeferredMount>
+        <div className="ext-sections">
+          <ExtendedToc />
+          <ExtendedSections />
+        </div>
+      </DeferredMount>
+      <BackToTop />
     </SiteLayout>
   );
 }
@@ -634,8 +642,9 @@ function ExtendedSections() {
 }
 
 function SectionShell({ eyebrow, title, lead, children, alt = false, id }: { eyebrow: string; title: React.ReactNode; lead?: string; children: React.ReactNode; alt?: boolean; id?: string }) {
+  const sectionId = id ?? eyebrow.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   return (
-    <section id={id} className={alt ? "bg-secondary/40" : ""}>
+    <section id={sectionId} data-toc-section data-toc-label={eyebrow} className={`reveal scroll-mt-24 ${alt ? "bg-secondary/40" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-[oklch(0.55_0.22_290)]">{eyebrow}</p>
@@ -739,7 +748,7 @@ function SectionProcess() {
   ];
   return (
     <SectionShell eyebrow="How it works" title={<>From <span className="gradient-text">first call</span> to first paycheck.</>} alt>
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ n, icon: Icon, t, b }) => (
           <div key={n} className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift">
             <span aria-hidden className="absolute -right-2 -top-2 text-[5.5rem] font-bold leading-none text-foreground/5">{n}</span>
@@ -783,7 +792,7 @@ function SectionTestimonials() {
   ];
   return (
     <SectionShell eyebrow="Customer stories" title={<>Loved by <span className="gradient-text">global teams.</span></>} alt>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {items.map((it) => (
           <figure key={it.name} className="relative rounded-2xl border border-border bg-card p-7 shadow-[var(--shadow-soft)] hover-lift">
             <Quote aria-hidden className="h-7 w-7 text-[oklch(0.55_0.22_290)]" />
@@ -847,7 +856,7 @@ function SectionPricing() {
   ];
   return (
     <SectionShell eyebrow="Simple pricing" title={<>Transparent plans, <span className="gradient-text">no surprises.</span></>}>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {tiers.map((tier) => (
           <div key={tier.t} className={`relative overflow-hidden rounded-3xl border p-7 shadow-[var(--shadow-card)] hover-lift ${tier.featured ? "border-transparent text-primary-foreground" : "border-border bg-card"}`} style={tier.featured ? { backgroundImage: "var(--gradient-purple)" } : undefined}>
             {tier.featured && <span className="absolute right-5 top-5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">Popular</span>}
@@ -882,7 +891,7 @@ function SectionResources() {
   ];
   return (
     <SectionShell eyebrow="Resources" title={<>Learn from the <span className="gradient-text">global hiring playbook.</span></>} alt>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {items.map(({ icon: Icon, t, b }) => (
           <Link key={t} to="/" className="group block rounded-3xl border border-border bg-card p-7 shadow-[var(--shadow-soft)] hover-lift">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-5 w-5" /></div>
@@ -907,7 +916,7 @@ function SectionFaq() {
   ];
   return (
     <SectionShell eyebrow="FAQ" title={<>Answers to the <span className="gradient-text">questions that matter.</span></>}>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {faqs.map((f) => (
           <details key={f.q} className="group rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift open:shadow-[var(--shadow-card)]">
             <summary className="flex cursor-pointer items-center justify-between gap-4 list-none">
@@ -947,5 +956,124 @@ function SectionNewsletter() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ---------- Long-page UX helpers ---------- */
+
+function ReadingProgress() {
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      setPct(max > 0 ? Math.min(100, (scrolled / max) * 100) : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, []);
+  return (
+    <div aria-hidden className="fixed left-0 right-0 top-0 z-[60] h-1 bg-transparent">
+      <div className="h-full origin-left transition-[width] duration-150 ease-out" style={{ width: `${pct}%`, backgroundImage: "var(--gradient-purple)" }} />
+    </div>
+  );
+}
+
+function BackToTop() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > 600);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="Back to top"
+      className={`fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full bg-[image:var(--gradient-purple)] text-primary-foreground shadow-[var(--shadow-elegant)] transition-all duration-300 hover:opacity-95 ${show ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"}`}
+    >
+      <ChevronUp className="h-5 w-5" />
+    </button>
+  );
+}
+
+function DeferredMount({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { setShow(true); io.disconnect(); }
+    }, { rootMargin: "600px 0px" });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+  // Reveal-on-scroll observer for child sections
+  useEffect(() => {
+    if (!show) return;
+    const els = document.querySelectorAll<HTMLElement>(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [show]);
+  return <div ref={ref}>{show ? children : <div className="h-[600px]" aria-hidden />}</div>;
+}
+
+function ExtendedToc() {
+  const [items, setItems] = useState<{ id: string; label: string }[]>([]);
+  const [active, setActive] = useState<string>("");
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-toc-section]"));
+    setItems(nodes.map((n) => ({ id: n.id, label: n.dataset.tocLabel || n.id })));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) setActive((e.target as HTMLElement).id); });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    nodes.forEach((n) => io.observe(n));
+    return () => io.disconnect();
+  }, []);
+
+  if (items.length === 0) return null;
+  return (
+    <>
+      {/* Desktop sticky TOC */}
+      <aside aria-label="Section navigation" className="pointer-events-none fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 xl:block">
+        <nav className="pointer-events-auto rounded-2xl border border-border bg-card/90 p-3 shadow-[var(--shadow-card)] backdrop-blur">
+          <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">On this page</p>
+          <ul className="flex max-h-[60vh] flex-col gap-0.5 overflow-y-auto">
+            {items.map((it) => (
+              <li key={it.id}>
+                <a href={`#${it.id}`} className={`block rounded-lg px-3 py-1.5 text-xs font-medium transition ${active === it.id ? "bg-[image:var(--gradient-purple)] text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}>{it.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+      {/* Mobile floating TOC button + sheet */}
+      <div className="fixed bottom-6 left-6 z-50 xl:hidden">
+        <button type="button" onClick={() => setOpen((v) => !v)} aria-label="Open section navigation" aria-expanded={open} className="grid h-12 w-12 place-items-center rounded-full bg-card text-foreground shadow-[var(--shadow-elegant)] border border-border">
+          <List className="h-5 w-5" />
+        </button>
+        {open && (
+          <div className="mt-3 w-64 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-elegant)]">
+            <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">On this page</p>
+            <ul className="flex max-h-[55vh] flex-col gap-0.5 overflow-y-auto">
+              {items.map((it) => (
+                <li key={it.id}>
+                  <a href={`#${it.id}`} onClick={() => setOpen(false)} className={`block rounded-lg px-3 py-2 text-xs font-medium ${active === it.id ? "bg-[image:var(--gradient-purple)] text-primary-foreground" : "text-foreground hover:bg-secondary"}`}>{it.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
