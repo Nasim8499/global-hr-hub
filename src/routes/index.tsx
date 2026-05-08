@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, Globe2, ShieldCheck, Wallet, Users, Briefcase,
   Plane, CheckCircle2, Sparkles, Building2, BarChart3, HeartHandshake,
-  Search, ArrowLeftRight, Download,
+  Search, ArrowLeftRight, Download, Zap, Award, Clock, FileText, MessageSquare,
+  TrendingUp, Lock, Layers, Lightbulb, Star, Quote, BookOpen, PieChart,
+  Headphones, Map,
 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
