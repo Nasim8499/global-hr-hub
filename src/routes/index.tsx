@@ -642,8 +642,9 @@ function ExtendedSections() {
 }
 
 function SectionShell({ eyebrow, title, lead, children, alt = false, id }: { eyebrow: string; title: React.ReactNode; lead?: string; children: React.ReactNode; alt?: boolean; id?: string }) {
+  const sectionId = id ?? eyebrow.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   return (
-    <section id={id} className={alt ? "bg-secondary/40" : ""}>
+    <section id={sectionId} data-toc-section data-toc-label={eyebrow} className={`reveal scroll-mt-24 ${alt ? "bg-secondary/40" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-[oklch(0.55_0.22_290)]">{eyebrow}</p>
