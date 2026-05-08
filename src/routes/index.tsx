@@ -610,3 +610,342 @@ function Stat({ n, l }: { n: string; l: string }) {
     </div>
   );
 }
+
+/* =====================================================================
+ * Extended sections — adds 12 rich content blocks for a long, vivid page
+ * ===================================================================*/
+function ExtendedSections() {
+  return (
+    <>
+      <SectionWhyUs />
+      <SectionServices />
+      <SectionIndustries />
+      <SectionProcess />
+      <SectionMetrics />
+      <SectionTestimonials />
+      <SectionIntegrations />
+      <SectionSecurity />
+      <SectionPricing />
+      <SectionResources />
+      <SectionFaq />
+      <SectionNewsletter />
+    </>
+  );
+}
+
+function SectionShell({ eyebrow, title, lead, children, alt = false, id }: { eyebrow: string; title: React.ReactNode; lead?: string; children: React.ReactNode; alt?: boolean; id?: string }) {
+  return (
+    <section id={id} className={alt ? "bg-secondary/40" : ""}>
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[oklch(0.55_0.22_290)]">{eyebrow}</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">{title}</h2>
+          {lead && <p className="mt-4 text-base text-muted-foreground sm:text-lg">{lead}</p>}
+        </div>
+        <div className="mt-12">{children}</div>
+      </div>
+    </section>
+  );
+}
+
+function SectionWhyUs() {
+  const items = [
+    { icon: Award, t: "20+ years of expertise", b: "Senior in-country specialists who have run global payroll long before remote work was cool." },
+    { icon: Users, t: "Real human support", b: "Talk to a named advisor — not a chatbot — within one business day." },
+    { icon: Clock, t: "Fast onboarding", b: "Most employees go live within 5 business days of contract signature." },
+    { icon: ShieldCheck, t: "Audit-ready compliance", b: "Every payroll cycle is backed by documented controls and country playbooks." },
+    { icon: Zap, t: "Zero hidden fees", b: "Transparent pricing with no setup costs and no annual lock-in." },
+    { icon: TrendingUp, t: "Built to scale", b: "From 1 hire to 1,000 — the platform grows with your team." },
+  ];
+  return (
+    <SectionShell eyebrow="Why VisaHOBe" title={<>Global hiring, <span className="gradient-text">made human.</span></>} lead="Local expertise paired with modern tooling so you can hire confidently in any market — without the legal headaches.">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map(({ icon: Icon, t, b }) => (
+          <div key={t} className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift">
+            <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl transition-opacity duration-500 group-hover:opacity-40" style={{ backgroundImage: "var(--gradient-purple)" }} />
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[image:var(--gradient-purple)] text-primary-foreground shadow-[var(--shadow-card)]">
+              <Icon className="h-5 w-5" />
+            </div>
+            <h3 className="relative mt-5 text-base font-semibold text-foreground">{t}</h3>
+            <p className="relative mt-2 text-sm text-muted-foreground">{b}</p>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionServices() {
+  const services = [
+    { icon: Globe2, t: "Employer of Record", b: "Hire compliantly in 100+ countries with no entity setup." },
+    { icon: Wallet, t: "Global Payroll", b: "Multi-currency payroll in your own entities and EOR regions." },
+    { icon: Briefcase, t: "Contractor Management", b: "Onboard and pay contractors worldwide in minutes." },
+    { icon: Plane, t: "Visa & Immigration", b: "End-to-end visa sponsorship and relocation support." },
+    { icon: ShieldCheck, t: "Compliance & Tax", b: "Locally vetted contracts, statutory filings and audits." },
+    { icon: HeartHandshake, t: "Benefits Admin", b: "Local healthcare, retirement and statutory benefits." },
+    { icon: Users, t: "Recruitment", b: "In-country recruiters sourcing pre-vetted talent." },
+    { icon: BookOpen, t: "Advisory", b: "Strategic guidance on entity vs. EOR, mobility and policy." },
+  ];
+  return (
+    <SectionShell eyebrow="Our Services" title={<>One partner for every <span className="gradient-text">global hire.</span></>} alt>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {services.map(({ icon: Icon, t, b }) => (
+          <div key={t} className="group rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)] hover-lift">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-4 w-4" /></div>
+            <h3 className="mt-4 text-sm font-semibold text-foreground">{t}</h3>
+            <p className="mt-1.5 text-xs text-muted-foreground">{b}</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[oklch(0.55_0.22_290)] opacity-0 transition group-hover:opacity-100">Learn more <ArrowRight className="h-3 w-3" /></span>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionIndustries() {
+  const items = [
+    { t: "Technology & SaaS", b: "Hire engineers across time zones." },
+    { t: "Financial Services", b: "Compliance-first global staffing." },
+    { t: "Healthcare & Life Sciences", b: "Specialized clinical talent." },
+    { t: "Manufacturing", b: "On-the-ground operators worldwide." },
+    { t: "Retail & E-commerce", b: "Scale support and ops globally." },
+    { t: "Media & Entertainment", b: "Production crews in any country." },
+    { t: "Energy & Utilities", b: "Engineers across critical regions." },
+    { t: "Education & EdTech", b: "Global instructors and curriculum." },
+  ];
+  return (
+    <SectionShell eyebrow="Industries" title={<>Trusted across <span className="gradient-text">every sector.</span></>} lead="From early-stage startups to Fortune 500 enterprises, we power global teams in the industries that move the world.">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map((it) => (
+          <div key={it.t} className="group flex items-start gap-3 rounded-2xl border border-border bg-card p-5 hover-lift">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[image:var(--gradient-soft)] text-foreground"><Layers className="h-4 w-4" /></div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">{it.t}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{it.b}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionProcess() {
+  const steps = [
+    { n: "01", icon: MessageSquare, t: "Discovery call", b: "We map your countries, headcount and timeline." },
+    { n: "02", icon: FileText, t: "Compliant contract", b: "Locally vetted agreements signed in days, not weeks." },
+    { n: "03", icon: Plane, t: "Onboarding & visas", b: "Background checks, visas and equipment shipped globally." },
+    { n: "04", icon: Wallet, t: "Live payroll", b: "Salaries, taxes and filings handled every cycle." },
+  ];
+  return (
+    <SectionShell eyebrow="How it works" title={<>From <span className="gradient-text">first call</span> to first paycheck.</>} alt>
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {steps.map(({ n, icon: Icon, t, b }) => (
+          <div key={n} className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift">
+            <span aria-hidden className="absolute -right-2 -top-2 text-[5.5rem] font-bold leading-none text-foreground/5">{n}</span>
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-5 w-5" /></div>
+            <h3 className="relative mt-5 text-base font-semibold text-foreground">{t}</h3>
+            <p className="relative mt-2 text-sm text-muted-foreground">{b}</p>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionMetrics() {
+  const items = [
+    { n: "100+", l: "Countries covered", icon: Globe2 },
+    { n: "12k+", l: "Employees onboarded", icon: Users },
+    { n: "99.8%", l: "Payroll accuracy", icon: PieChart },
+    { n: "<24h", l: "Average response time", icon: Headphones },
+  ];
+  return (
+    <SectionShell eyebrow="By the numbers" title={<>Outcomes that <span className="gradient-text">speak for themselves.</span></>}>
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(({ n, l, icon: Icon }) => (
+          <div key={l} className="relative overflow-hidden rounded-3xl border border-border p-7 text-center shadow-[var(--shadow-card)]" style={{ backgroundImage: "var(--gradient-soft)" }}>
+            <Icon className="mx-auto h-6 w-6 text-[oklch(0.55_0.22_290)]" />
+            <p className="mt-4 text-4xl font-semibold tracking-tight gradient-text sm:text-5xl">{n}</p>
+            <p className="mt-2 text-sm font-medium text-muted-foreground">{l}</p>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionTestimonials() {
+  const items = [
+    { name: "Amelia Chen", role: "Head of People, Northwind", quote: "VisaHOBe handled our APAC expansion end-to-end. We went live in three new countries in under a month." },
+    { name: "Marcus Becker", role: "COO, Helix Labs", quote: "Their compliance team is genuinely the best I've worked with. No surprises, ever." },
+    { name: "Priya Raman", role: "VP Talent, Orbital", quote: "Real humans, fast answers, transparent pricing. Exactly what global hiring should feel like." },
+  ];
+  return (
+    <SectionShell eyebrow="Customer stories" title={<>Loved by <span className="gradient-text">global teams.</span></>} alt>
+      <div className="grid gap-5 md:grid-cols-3">
+        {items.map((it) => (
+          <figure key={it.name} className="relative rounded-2xl border border-border bg-card p-7 shadow-[var(--shadow-soft)] hover-lift">
+            <Quote aria-hidden className="h-7 w-7 text-[oklch(0.55_0.22_290)]" />
+            <blockquote className="mt-4 text-base text-foreground">"{it.quote}"</blockquote>
+            <div className="mt-5 flex items-center gap-1 text-[oklch(0.75_0.18_70)]">
+              {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+            </div>
+            <figcaption className="mt-4 text-sm">
+              <p className="font-semibold text-foreground">{it.name}</p>
+              <p className="text-muted-foreground">{it.role}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionIntegrations() {
+  const tools = ["Slack", "Workday", "BambooHR", "QuickBooks", "Xero", "NetSuite", "Greenhouse", "Lever", "Okta", "Google Workspace", "Microsoft 365", "Notion"];
+  return (
+    <SectionShell eyebrow="Integrations" title={<>Plays nicely with your <span className="gradient-text">existing stack.</span></>}>
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+        {tools.map((t) => (
+          <div key={t} className="rounded-2xl border border-border bg-card p-5 text-center shadow-[var(--shadow-soft)] hover-lift">
+            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-[image:var(--gradient-soft)] text-foreground"><Sparkles className="h-4 w-4" /></div>
+            <p className="mt-3 text-xs font-semibold text-foreground">{t}</p>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionSecurity() {
+  const items = [
+    { icon: Lock, t: "SOC 2 Type II" },
+    { icon: ShieldCheck, t: "GDPR aligned" },
+    { icon: Lock, t: "ISO 27001 ready" },
+    { icon: ShieldCheck, t: "Encrypted at rest & in transit" },
+  ];
+  return (
+    <SectionShell eyebrow="Trust & security" title={<>Enterprise-grade by <span className="gradient-text">default.</span></>} lead="Your people data deserves bank-level care. Independent audits, strict access controls and continuous monitoring keep your team safe." alt>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(({ icon: Icon, t }) => (
+          <div key={t} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 hover-lift">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-4 w-4" /></div>
+            <p className="text-sm font-semibold text-foreground">{t}</p>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionPricing() {
+  const tiers = [
+    { t: "Contractor", p: "$29", per: "/contractor / mo", feats: ["Compliant agreements", "Multi-currency payments", "Tax docs (W-8/W-9)", "Email support"] },
+    { t: "Employer of Record", p: "$499", per: "/employee / mo", feats: ["Local entity coverage", "Statutory benefits", "Visa support add-on", "Dedicated advisor"], featured: true },
+    { t: "Global Payroll", p: "Custom", per: "your entities", feats: ["Multi-country payroll", "Filings & remittances", "ERP/HRIS integrations", "Implementation team"] },
+  ];
+  return (
+    <SectionShell eyebrow="Simple pricing" title={<>Transparent plans, <span className="gradient-text">no surprises.</span></>}>
+      <div className="grid gap-5 md:grid-cols-3">
+        {tiers.map((tier) => (
+          <div key={tier.t} className={`relative overflow-hidden rounded-3xl border p-7 shadow-[var(--shadow-card)] hover-lift ${tier.featured ? "border-transparent text-primary-foreground" : "border-border bg-card"}`} style={tier.featured ? { backgroundImage: "var(--gradient-purple)" } : undefined}>
+            {tier.featured && <span className="absolute right-5 top-5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">Popular</span>}
+            <h3 className={`text-lg font-semibold ${tier.featured ? "text-primary-foreground" : "text-foreground"}`}>{tier.t}</h3>
+            <p className="mt-4 flex items-baseline gap-1">
+              <span className={`text-4xl font-semibold tracking-tight ${tier.featured ? "text-primary-foreground" : "gradient-text"}`}>{tier.p}</span>
+              <span className={`text-xs ${tier.featured ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{tier.per}</span>
+            </p>
+            <ul className="mt-6 space-y-2.5">
+              {tier.feats.map((f) => (
+                <li key={f} className={`flex items-start gap-2 text-sm ${tier.featured ? "text-primary-foreground/95" : "text-foreground"}`}>
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Link to="/contact" className={`mt-7 inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-semibold transition ${tier.featured ? "bg-white text-foreground hover:bg-white/90" : "bg-[image:var(--gradient-purple)] text-primary-foreground hover:opacity-95"}`}>
+              Get started <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionResources() {
+  const items = [
+    { icon: BookOpen, t: "Country hiring guides", b: "Step-by-step playbooks for every market we cover." },
+    { icon: Lightbulb, t: "Compliance insights", b: "Monthly briefings on labor law and tax updates." },
+    { icon: Map, t: "Global salary benchmarks", b: "Stay competitive with fresh, localized data." },
+  ];
+  return (
+    <SectionShell eyebrow="Resources" title={<>Learn from the <span className="gradient-text">global hiring playbook.</span></>} alt>
+      <div className="grid gap-5 md:grid-cols-3">
+        {items.map(({ icon: Icon, t, b }) => (
+          <Link key={t} to="/" className="group block rounded-3xl border border-border bg-card p-7 shadow-[var(--shadow-soft)] hover-lift">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-5 w-5" /></div>
+            <h3 className="mt-5 text-lg font-semibold text-foreground">{t}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{b}</p>
+            <span className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-[oklch(0.55_0.22_290)]">Read more <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" /></span>
+          </Link>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionFaq() {
+  const faqs = [
+    { q: "How fast can we onboard a new hire?", a: "Most employees go live within 5 business days of contract signature." },
+    { q: "Do we need our own legal entity?", a: "No. With Employer of Record we hire on your behalf in countries where you don't have an entity." },
+    { q: "Which currencies do you support?", a: "We pay employees in their local currency in 100+ countries, with multi-currency invoicing." },
+    { q: "Can you sponsor visas?", a: "Yes — our immigration team handles work permits, dependents and renewals end-to-end." },
+    { q: "Is there a long-term contract?", a: "No. We work month-to-month with no annual lock-in." },
+    { q: "How is my data protected?", a: "We are SOC 2 Type II certified and GDPR aligned, with full encryption and access controls." },
+  ];
+  return (
+    <SectionShell eyebrow="FAQ" title={<>Answers to the <span className="gradient-text">questions that matter.</span></>}>
+      <div className="grid gap-4 md:grid-cols-2">
+        {faqs.map((f) => (
+          <details key={f.q} className="group rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift open:shadow-[var(--shadow-card)]">
+            <summary className="flex cursor-pointer items-center justify-between gap-4 list-none">
+              <span className="text-sm font-semibold text-foreground">{f.q}</span>
+              <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[image:var(--gradient-soft)] text-foreground transition group-open:rotate-45">+</span>
+            </summary>
+            <p className="mt-3 text-sm text-muted-foreground">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function SectionNewsletter() {
+  return (
+    <section className="px-3 pb-12 sm:px-4 sm:pb-16">
+      <div className="relative overflow-hidden rounded-[28px] sm:rounded-[36px] border border-border bg-card p-8 shadow-[var(--shadow-card)] sm:p-12">
+        <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full opacity-30 blur-3xl" style={{ backgroundImage: "var(--gradient-purple)" }} />
+        <div className="relative grid gap-8 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[oklch(0.55_0.22_290)]">Stay in the loop</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Monthly insights on <span className="gradient-text">global hiring.</span>
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">No spam — just the regulatory updates, salary trends and playbooks our customers ask for.</p>
+          </div>
+          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
+            <label className="relative flex-1">
+              <span className="sr-only">Work email</span>
+              <input type="email" required placeholder="you@company.com" className="h-12 w-full rounded-full border border-border bg-card px-5 text-sm text-foreground shadow-[var(--shadow-soft)] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]" />
+            </label>
+            <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--gradient-purple)] px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-soft)] hover:opacity-95">
+              Subscribe <ArrowRight className="h-4 w-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
