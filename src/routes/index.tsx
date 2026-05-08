@@ -748,7 +748,7 @@ function SectionProcess() {
   ];
   return (
     <SectionShell eyebrow="How it works" title={<>From <span className="gradient-text">first call</span> to first paycheck.</>} alt>
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ n, icon: Icon, t, b }) => (
           <div key={n} className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift">
             <span aria-hidden className="absolute -right-2 -top-2 text-[5.5rem] font-bold leading-none text-foreground/5">{n}</span>
@@ -792,7 +792,7 @@ function SectionTestimonials() {
   ];
   return (
     <SectionShell eyebrow="Customer stories" title={<>Loved by <span className="gradient-text">global teams.</span></>} alt>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {items.map((it) => (
           <figure key={it.name} className="relative rounded-2xl border border-border bg-card p-7 shadow-[var(--shadow-soft)] hover-lift">
             <Quote aria-hidden className="h-7 w-7 text-[oklch(0.55_0.22_290)]" />
@@ -856,7 +856,7 @@ function SectionPricing() {
   ];
   return (
     <SectionShell eyebrow="Simple pricing" title={<>Transparent plans, <span className="gradient-text">no surprises.</span></>}>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {tiers.map((tier) => (
           <div key={tier.t} className={`relative overflow-hidden rounded-3xl border p-7 shadow-[var(--shadow-card)] hover-lift ${tier.featured ? "border-transparent text-primary-foreground" : "border-border bg-card"}`} style={tier.featured ? { backgroundImage: "var(--gradient-purple)" } : undefined}>
             {tier.featured && <span className="absolute right-5 top-5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">Popular</span>}
@@ -891,7 +891,7 @@ function SectionResources() {
   ];
   return (
     <SectionShell eyebrow="Resources" title={<>Learn from the <span className="gradient-text">global hiring playbook.</span></>} alt>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {items.map(({ icon: Icon, t, b }) => (
           <Link key={t} to="/" className="group block rounded-3xl border border-border bg-card p-7 shadow-[var(--shadow-soft)] hover-lift">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[image:var(--gradient-purple)] text-primary-foreground"><Icon className="h-5 w-5" /></div>
@@ -916,7 +916,7 @@ function SectionFaq() {
   ];
   return (
     <SectionShell eyebrow="FAQ" title={<>Answers to the <span className="gradient-text">questions that matter.</span></>}>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {faqs.map((f) => (
           <details key={f.q} className="group rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] hover-lift open:shadow-[var(--shadow-card)]">
             <summary className="flex cursor-pointer items-center justify-between gap-4 list-none">
