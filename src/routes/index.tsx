@@ -6,7 +6,8 @@ import {
   TrendingUp, Lock, Layers, Lightbulb, Star, Quote, BookOpen, PieChart,
   Headphones, Map,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronUp, List } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
 import countrySingapore from "@/assets/country-singapore.jpg";
@@ -597,7 +598,14 @@ function Index() {
           </div>
         </div>
       </section>
-      <ExtendedSections />
+      <ReadingProgress />
+      <DeferredMount>
+        <div className="ext-sections">
+          <ExtendedToc />
+          <ExtendedSections />
+        </div>
+      </DeferredMount>
+      <BackToTop />
     </SiteLayout>
   );
 }
