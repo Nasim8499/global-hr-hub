@@ -405,31 +405,35 @@ function Index() {
               to="/countries/$slug"
               params={{ slug: c.slug }}
               aria-label={`View hiring essentials for ${c.name}`}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
+              className="country-card group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)] hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
             >
-              <div
-                className="relative flex h-32 items-center justify-center text-7xl"
-                style={{ backgroundImage: "var(--gradient-soft)" }}
+              {/* Full-cover flag */}
+              <span
                 aria-hidden
+                className="pointer-events-none absolute inset-0 flex items-center justify-center text-[18rem] leading-none transition-transform duration-700 ease-out group-hover:scale-110"
               >
-                <span className="absolute -right-3 -top-3 text-[8rem] opacity-20 blur-[1px] transition-transform duration-500 group-hover:scale-110">
-                  {c.flag}
-                </span>
-                <span className="relative drop-shadow-sm">{c.flag}</span>
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-foreground">{c.name}</h3>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{c.region}</p>
-                <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{c.currency}</span>
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-secondary-foreground">{c.payrollCycle.split(",")[0]}</span>
+                {c.flag}
+              </span>
+              {/* Glass + gradient overlays */}
+              <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+              <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ backgroundImage: "var(--gradient-purple)", mixBlendMode: "overlay" }} />
+              {/* Region chip */}
+              <span className="absolute left-4 top-4 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                {c.region}
+              </span>
+              <span className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/15 text-white backdrop-blur-md transition-transform duration-300 group-hover:translate-x-1 group-hover:bg-white group-hover:text-foreground">
+                <ArrowRight className="h-4 w-4" />
+              </span>
+              {/* Bottom content */}
+              <div className="relative z-10 flex flex-col gap-3 p-5">
+                <h3 className="text-xl font-semibold tracking-tight text-white drop-shadow-sm">{c.name}</h3>
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium">
+                  <span className="rounded-full border border-white/25 bg-white/15 px-2.5 py-1 text-white backdrop-blur-md">{c.currency}</span>
+                  <span className="rounded-full border border-white/25 bg-white/15 px-2.5 py-1 text-white backdrop-blur-md">{c.payrollCycle.split(",")[0]}</span>
                 </div>
                 <span
                   aria-hidden
-                  className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-full bg-[image:var(--gradient-purple)] px-3 py-2 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-soft)] opacity-90 transition group-hover:opacity-100"
+                  className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-3 py-2 text-xs font-semibold text-foreground shadow-[var(--shadow-soft)] transition group-hover:bg-[image:var(--gradient-purple)] group-hover:text-primary-foreground"
                 >
                   View hiring essentials <ArrowRight className="h-3.5 w-3.5" />
                 </span>
