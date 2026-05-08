@@ -7,6 +7,25 @@ import {
 import { useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { countries } from "@/data/countries";
+import countrySingapore from "@/assets/country-singapore.jpg";
+import countryAustralia from "@/assets/country-australia.jpg";
+import countryMoldova from "@/assets/country-moldova.jpg";
+import countrySerbia from "@/assets/country-serbia.jpg";
+import countrySaudi from "@/assets/country-saudi.jpg";
+import countryUae from "@/assets/country-uae.jpg";
+import countryKuwait from "@/assets/country-kuwait.jpg";
+import countryMalaysia from "@/assets/country-malaysia.jpg";
+
+const countryImages: Record<string, string> = {
+  singapore: countrySingapore,
+  australia: countryAustralia,
+  moldova: countryMoldova,
+  serbia: countrySerbia,
+  "saudi-arabia": countrySaudi,
+  uae: countryUae,
+  kuwait: countryKuwait,
+  malaysia: countryMalaysia,
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
