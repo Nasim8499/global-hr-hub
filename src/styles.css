@@ -190,6 +190,20 @@
   .essential-card:hover .essential-media img { transform: none; }
 }
 
+/* ---- Country cards (full-cover image) ---- */
+.country-card { aspect-ratio: 4 / 5; border-radius: 1.5rem; }
+.country-card img { object-fit: cover; object-position: center; transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1); }
+.country-card:hover img,
+.country-card:focus-visible img { transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) {
+  .country-card img,
+  .country-card [class*="transition"] { transition: none !important; animation: none !important; }
+  .country-card:hover img,
+  .country-card:focus-visible img { transform: none !important; }
+}
+/* RTL: keep arrow direction visually aligned to reading flow */
+[dir="rtl"] .country-card .group-hover\:translate-x-1 { --tw-translate-x: -0.25rem; }
+
 .dark {
   --background: oklch(0.14 0.02 280);
   --foreground: oklch(0.98 0.005 280);
