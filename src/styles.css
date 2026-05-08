@@ -191,17 +191,55 @@
 }
 
 /* ---- Country cards (full-cover image) ---- */
-.country-card { aspect-ratio: 4 / 5; border-radius: 1.5rem; }
-.country-card img { object-fit: cover; object-position: center; transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1); }
-.country-card:hover img,
-.country-card:focus-visible img { transform: scale(1.08); }
-@media (prefers-reduced-motion: reduce) {
-  .country-card img,
-  .country-card [class*="transition"] { transition: none !important; animation: none !important; }
-  .country-card:hover img,
-  .country-card:focus-visible img { transform: none !important; }
+.country-card {
+  aspect-ratio: 4 / 5;
+  border-radius: 1.5rem;
+  /* Per-card tunables (overridden per [data-slug]) */
+  --co-from: oklch(0.18 0.04 280 / 0.92);
+  --co-mid: oklch(0.22 0.06 280 / 0.45);
+  --co-to: oklch(0.22 0.06 280 / 0.05);
+  --co-mid-stop: 55%;
+  --tint: var(--gradient-purple);
 }
-/* RTL: keep arrow direction visually aligned to reading flow */
+.country-card .country-img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1), filter 500ms ease;
+}
+.country-card:hover .country-img,
+.country-card:focus-visible .country-img { transform: scale(1.08); }
+.country-card .country-overlay {
+  background: linear-gradient(to top, var(--co-from) 0%, var(--co-mid) var(--co-mid-stop), var(--co-to) 100%);
+}
+.country-card .country-tint {
+  background-image: var(--tint);
+  mix-blend-mode: overlay;
+}
+
+/* Per-country overlay tuning */
+.country-card[data-slug="singapore"] { --tint: linear-gradient(135deg, oklch(0.7 0.18 25), oklch(0.65 0.2 320)); --co-mid: oklch(0.18 0.05 320 / 0.5); }
+.country-card[data-slug="australia"] { --tint: linear-gradient(135deg, oklch(0.7 0.18 50), oklch(0.6 0.18 250)); --co-mid: oklch(0.16 0.06 250 / 0.5); }
+.country-card[data-slug="moldova"]   { --tint: linear-gradient(135deg, oklch(0.75 0.18 130), oklch(0.7 0.16 60)); --co-mid: oklch(0.18 0.05 130 / 0.5); }
+.country-card[data-slug="serbia"]    { --tint: linear-gradient(135deg, oklch(0.65 0.2 25), oklch(0.55 0.2 280)); --co-mid: oklch(0.18 0.06 280 / 0.5); }
+.country-card[data-slug="saudi-arabia"] { --tint: linear-gradient(135deg, oklch(0.75 0.16 80), oklch(0.6 0.18 160)); --co-mid: oklch(0.18 0.05 160 / 0.5); }
+.country-card[data-slug="uae"]       { --tint: linear-gradient(135deg, oklch(0.7 0.2 30), oklch(0.55 0.2 295)); --co-mid: oklch(0.18 0.06 295 / 0.5); }
+.country-card[data-slug="kuwait"]    { --tint: linear-gradient(135deg, oklch(0.75 0.16 195), oklch(0.7 0.18 80)); --co-mid: oklch(0.18 0.05 195 / 0.5); }
+.country-card[data-slug="malaysia"]  { --tint: linear-gradient(135deg, oklch(0.7 0.2 160), oklch(0.6 0.2 30)); --co-mid: oklch(0.18 0.05 160 / 0.5); }
+
+@media (prefers-reduced-motion: reduce) {
+  .country-card,
+  .country-card *,
+  .country-card .country-img,
+  .country-card .country-tint {
+    transition: none !important;
+    animation: none !important;
+  }
+  .country-card:hover .country-img,
+  .country-card:focus-visible .country-img { transform: none !important; }
+  .country-card:hover .country-tint { opacity: 0 !important; }
+}
+
+/* RTL: flip arrow direction */
 [dir="rtl"] .country-card .group-hover\:translate-x-1 { --tw-translate-x: -0.25rem; }
 
 .dark {
