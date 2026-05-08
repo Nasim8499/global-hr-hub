@@ -597,6 +597,7 @@ function Index() {
           </div>
         </div>
       </section>
+      <ExtendedSections />
     </SiteLayout>
   );
 }
