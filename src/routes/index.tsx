@@ -423,30 +423,35 @@ function Index() {
               key={c.slug}
               to="/countries/$slug"
               params={{ slug: c.slug }}
+              data-slug={c.slug}
               aria-label={`View hiring essentials for ${c.name}`}
-              className="country-card group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-soft)] hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
+              className="country-card group relative isolate flex flex-col justify-end overflow-hidden border border-border shadow-[var(--shadow-soft)] hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]"
             >
-              {/* Full-cover destination image */}
-              {countryImages[c.slug] ? (
-                <img
-                  src={countryImages[c.slug]}
-                  alt=""
-                  loading="lazy"
-                  width={768}
-                  height={960}
-                  className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                />
-              ) : (
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center text-[18rem] leading-none transition-transform duration-700 ease-out group-hover:scale-110"
-                >
-                  {c.flag}
-                </span>
-              )}
-              {/* Gradient overlays for legibility */}
-              <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
-              <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" style={{ backgroundImage: "var(--gradient-purple)", mixBlendMode: "overlay" }} />
+              {/* Full-cover destination image with graceful fallback */}
+              <img
+                src={countryImages[c.slug]}
+                alt=""
+                loading="lazy"
+                width={768}
+                height={960}
+                onError={(e) => {
+                  const el = e.currentTarget;
+                  el.style.display = "none";
+                  const fb = el.nextElementSibling as HTMLElement | null;
+                  if (fb) fb.style.display = "flex";
+                }}
+                className="country-img pointer-events-none absolute inset-0 h-full w-full"
+              />
+              <span
+                aria-hidden
+                style={{ display: countryImages[c.slug] ? "none" : "flex", backgroundImage: "var(--gradient-soft)" }}
+                className="pointer-events-none absolute inset-0 items-center justify-center text-[14rem] leading-none"
+              >
+                {c.flag}
+              </span>
+              {/* Legibility + per-country tint overlays */}
+              <span aria-hidden className="country-overlay pointer-events-none absolute inset-0" />
+              <span aria-hidden className="country-tint pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" />
               {/* Region chip */}
               <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
                 <span className="text-base leading-none">{c.flag}</span>
