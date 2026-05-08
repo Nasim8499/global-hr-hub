@@ -1002,7 +1002,10 @@ function BackToTop() {
   return (
     <button
       type="button"
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      onClick={() => {
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      }}
       aria-label="Back to top"
       tabIndex={show ? 0 : -1}
       aria-hidden={!show}
@@ -1041,21 +1044,89 @@ function ExtendedToc() {
   const [items, setItems] = useState<{ id: string; label: string }[]>([]);
   const [active, setActive] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  const prefersReducedMotion = () =>
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-toc-section]"));
     setItems(nodes.map((n) => ({ id: n.id, label: n.dataset.tocLabel || n.id })));
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) setActive((e.target as HTMLElement).id); });
-    }, { rootMargin: "-40% 0px -55% 0px" });
-    nodes.forEach((n) => io.observe(n));
-    return () => io.disconnect();
+
+    // Throttled scroll spy via rAF — accurate for fast scrolling
+    let ticking = false;
+    const computeActive = () => {
+      ticking = false;
+      const probe = window.innerHeight * 0.35;
+      let current = nodes[0]?.id ?? "";
+      for (const n of nodes) {
+        const rect = n.getBoundingClientRect();
+        if (rect.top - probe <= 0) current = n.id; else break;
+      }
+      setActive((prev) => (prev === current ? prev : current));
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(computeActive);
+    };
+    computeActive();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    // Deep-link: read URL hash on first paint
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash && nodes.some((n) => n.id === hash)) {
+      requestAnimationFrame(() => {
+        const target = document.getElementById(hash);
+        if (!target) return;
+        target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+        target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+      });
+    }
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
+
+  // Close mobile sheet on Escape, outside click, or focus leaving
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    const onPointer = (e: MouseEvent) => {
+      if (!sheetRef.current) return;
+      const target = e.target as Node;
+      if (!sheetRef.current.contains(target) && !triggerRef.current?.contains(target)) setOpen(false);
+    };
+    const onFocus = () => {
+      if (!sheetRef.current) return;
+      const a = document.activeElement;
+      if (a && !sheetRef.current.contains(a) && a !== triggerRef.current) setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("focusin", onFocus);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("focusin", onFocus);
+    };
+  }, [open]);
 
   const onAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     const target = document.getElementById(id);
     if (target) {
       e.preventDefault();
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
       history.replaceState(null, "", `#${id}`);
       target.setAttribute("tabindex", "-1");
       (target as HTMLElement).focus({ preventScroll: true });
@@ -1096,11 +1167,11 @@ function ExtendedToc() {
       </aside>
       {/* Mobile floating TOC button + sheet */}
       <div className="fixed bottom-6 left-6 z-50 xl:hidden">
-        <button type="button" onClick={() => setOpen((v) => !v)} aria-label="Open section navigation" aria-expanded={open} className="grid h-12 w-12 place-items-center rounded-full bg-card text-foreground shadow-[var(--shadow-elegant)] border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]">
+        <button ref={triggerRef} type="button" onClick={() => setOpen((v) => !v)} aria-label="Open section navigation" aria-expanded={open} aria-controls="toc-sheet" className="grid h-12 w-12 place-items-center rounded-full bg-card text-foreground shadow-[var(--shadow-elegant)] border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.22_290)]">
           <List className="h-5 w-5" />
         </button>
         {open && (
-          <div className="mt-3 w-64 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-elegant)]">
+          <div ref={sheetRef} id="toc-sheet" role="dialog" aria-label="Section navigation" className="mt-3 w-64 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-elegant)]">
             <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">On this page</p>
             <ul onKeyDown={onKeyNav} className="flex max-h-[55vh] flex-col gap-0.5 overflow-y-auto">
               {items.map((it) => (

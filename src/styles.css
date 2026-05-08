@@ -251,6 +251,9 @@
 
 /* Smoother momentum-style scrolling for long pages */
 html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 .dark {
   --background: oklch(0.14 0.02 280);
