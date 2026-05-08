@@ -8,6 +8,25 @@ import iconCurrency from "@/assets/icon-currency.jpg";
 import iconPayroll from "@/assets/icon-payroll.jpg";
 import iconHours from "@/assets/icon-hours.jpg";
 import iconLanguage from "@/assets/icon-language.jpg";
+import countrySingapore from "@/assets/country-singapore.jpg";
+import countryAustralia from "@/assets/country-australia.jpg";
+import countryMoldova from "@/assets/country-moldova.jpg";
+import countrySerbia from "@/assets/country-serbia.jpg";
+import countrySaudi from "@/assets/country-saudi.jpg";
+import countryUae from "@/assets/country-uae.jpg";
+import countryKuwait from "@/assets/country-kuwait.jpg";
+import countryMalaysia from "@/assets/country-malaysia.jpg";
+
+const countryImages: Record<string, string> = {
+  singapore: countrySingapore,
+  australia: countryAustralia,
+  moldova: countryMoldova,
+  serbia: countrySerbia,
+  "saudi-arabia": countrySaudi,
+  uae: countryUae,
+  kuwait: countryKuwait,
+  malaysia: countryMalaysia,
+};
 
 const essentialImages: Record<string, string> = {
   Currency: iconCurrency,
@@ -61,8 +80,19 @@ function CountryPage() {
   return (
     <SiteLayout>
       <section className="px-3 pt-3 sm:px-4 sm:pt-4">
-        <div className="overflow-hidden rounded-[28px] sm:rounded-[36px] bg-[image:var(--gradient-hero)] shadow-[var(--shadow-elegant)]">
-          <div className="mx-auto max-w-7xl px-5 py-14 sm:px-10 sm:py-20 lg:px-14">
+        <div className="relative isolate overflow-hidden rounded-[28px] sm:rounded-[36px] bg-[image:var(--gradient-hero)] shadow-[var(--shadow-elegant)]">
+          {countryImages[country.slug] && (
+            <>
+              <img
+                src={countryImages[country.slug]}
+                alt=""
+                aria-hidden
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-60 motion-safe:animate-fade-up"
+              />
+              <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-background/30" />
+            </>
+          )}
+          <div className="relative mx-auto max-w-7xl px-5 py-14 sm:px-10 sm:py-20 lg:px-14">
             <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/75">
               <Link to="/" className="hover:text-foreground">Home</Link>
               <span>/</span><span>Countries</span><span>/</span>
