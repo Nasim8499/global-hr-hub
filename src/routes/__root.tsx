@@ -36,7 +36,7 @@ export const Route = createRootRoute({
       { property: "og:title", content: "VisaHOBe Pte. LTD Global Playroll Hub" },
       { property: "og:description", content: "VisaHOBe Pte. Ltd. Global Payroll Hub" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "VisaHOBe Pte. LTD Global Playroll Hub" },
       { name: "twitter:description", content: "VisaHOBe Pte. Ltd. Global Payroll Hub" },

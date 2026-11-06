@@ -9,20 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LegalRouteImport } from './routes/legal'
-import { Route as GlobalRecruitmentRouteImport } from './routes/global-recruitment'
-import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as GlobalRecruitmentRouteImport } from './routes/global-recruitment'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as CountriesSlugRouteImport } from './routes/countries/$slug'
 
-const LegalRoute = LegalRouteImport.update({
-  id: '/legal',
-  path: '/legal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GlobalRecruitmentRoute = GlobalRecruitmentRouteImport.update({
-  id: '/global-recruitment',
-  path: '/global-recruitment',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -30,9 +25,14 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const GlobalRecruitmentRoute = GlobalRecruitmentRouteImport.update({
+  id: '/global-recruitment',
+  path: '/global-recruitment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CountriesSlugRoute = CountriesSlugRouteImport.update({
@@ -66,11 +66,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/contact'
-    | '/global-recruitment'
-    | '/legal'
-    | '/countries/$slug'
+    '/' | '/contact' | '/global-recruitment' | '/legal' | '/countries/$slug'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/contact' | '/global-recruitment' | '/legal' | '/countries/$slug'
   id:
@@ -92,18 +88,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/legal': {
-      id: '/legal'
-      path: '/legal'
-      fullPath: '/legal'
-      preLoaderRoute: typeof LegalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/global-recruitment': {
-      id: '/global-recruitment'
-      path: '/global-recruitment'
-      fullPath: '/global-recruitment'
-      preLoaderRoute: typeof GlobalRecruitmentRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -113,11 +102,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/global-recruitment': {
+      id: '/global-recruitment'
+      path: '/global-recruitment'
+      fullPath: '/global-recruitment'
+      preLoaderRoute: typeof GlobalRecruitmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/countries/$slug': {
