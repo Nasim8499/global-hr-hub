@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.back_to_top_clicked": {
+      "event_schema_version": 1,
+      "description": "Visitor clicked the floating Back to Top button.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scroll_pct"
+        ],
+        "properties": {
+          "scroll_pct": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "project.scroll_depth_reached": {
+      "event_schema_version": 1,
+      "description": "Visitor scrolled the home page past a 25/50/75/100% milestone.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "milestone"
+        ],
+        "properties": {
+          "milestone": {
+            "type": "integer",
+            "enum": [
+              25,
+              50,
+              75,
+              100
+            ]
+          }
+        }
+      }
+    },
+    "project.toc_section_clicked": {
+      "event_schema_version": 1,
+      "description": "Visitor jumped to a section using the table of contents.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "section_id",
+          "surface"
+        ],
+        "properties": {
+          "section_id": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string",
+            "enum": [
+              "sidebar",
+              "mobile_sheet"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
