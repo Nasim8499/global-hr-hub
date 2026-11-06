@@ -965,11 +965,19 @@ function ReadingProgress() {
   const [pct, setPct] = useState(0);
   const [rtl, setRtl] = useState(false);
   useEffect(() => {
+    const sent = new Set<number>();
     const onScroll = () => {
       const h = document.documentElement;
       const scrolled = h.scrollTop;
       const max = h.scrollHeight - h.clientHeight;
-      setPct(max > 0 ? Math.min(100, (scrolled / max) * 100) : 0);
+      const p = max > 0 ? Math.min(100, (scrolled / max) * 100) : 0;
+      setPct(p);
+      for (const m of [25, 50, 75, 100]) {
+        if (p >= m - 0.5 && !sent.has(m) && scrolled > 0) {
+          sent.add(m);
+          window.__lovableEvents?.track?.("project.scroll_depth_reached", { milestone: m });
+        }
+      }
     };
     onScroll();
     setRtl(document.documentElement.dir === "rtl");
@@ -1004,6 +1012,9 @@ function BackToTop() {
       type="button"
       onClick={() => {
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        window.__lovableEvents?.track?.("project.back_to_top_clicked", { scroll_pct: max > 0 ? Math.round((h.scrollTop / max) * 100) : 0 });
         window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
       }}
       aria-label="Back to top"
@@ -1126,6 +1137,7 @@ function ExtendedToc() {
     const target = document.getElementById(id);
     if (target) {
       e.preventDefault();
+      window.__lovableEvents?.track?.("project.toc_section_clicked", { section_id: id, surface: open ? "mobile_sheet" : "sidebar" });
       target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
       history.replaceState(null, "", `#${id}`);
       target.setAttribute("tabindex", "-1");
@@ -1192,4 +1204,12 @@ function ExtendedToc() {
       </div>
     </>
   );
+}
+
+declare global {
+  interface Window {
+    __lovableEvents?: {
+      track?: (event: string, properties?: Record<string, unknown>) => string | null;
+    };
+  }
 }
