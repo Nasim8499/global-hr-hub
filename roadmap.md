@@ -1,0 +1,4 @@
+- [ ] SEO metadata on main pages
+- [ ] Engagement events (scroll, TOC, back to top)
+- [ ] Layout parity review report
+- [ ] Sign in / sign up (needs user answer on profiles)
